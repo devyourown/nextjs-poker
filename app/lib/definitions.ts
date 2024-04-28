@@ -3,5 +3,10 @@ export type User = {
   name: string;
   email: string;
   password: string;
-  money: number;
+};
+
+export type Money = {
+  id: string;
+  user_id: string;
+  amount: number;
 };

@@ -8,7 +8,7 @@
 - entering room function
 - playing in room function
 - ~~login function~~
-- make database
+- ~~make database~~
 - core poker function
 - core poker function tests
 - ~~rank function~~
