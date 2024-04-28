@@ -9,3 +9,5 @@
 - playing in room function
 - login function
 - make database
+- core poker function
+- core poker function tests
