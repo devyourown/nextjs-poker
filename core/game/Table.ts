@@ -140,8 +140,8 @@ export class PlayerTable {
     this.size--;
   }
 
-  getCurrentPlayer(): Player | null {
-    return this.current ? this.current.player : null;
+  getCurrentPlayer(): Player {
+    return this.current?.player!;
   }
 
   getSize(): number {

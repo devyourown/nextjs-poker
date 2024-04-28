@@ -1,29 +1,29 @@
 import { Card, Suit } from "../deck/Card";
 
 export class RankingCalculator {
-  calculateCards(cards: Card[]): number {
-    const numbersOfCards: number[] = this.convertToNumber(cards);
+  static calculateCards(cards: Card[]): number {
+    const numbersOfCards: number[] = RankingCalculator.convertToNumber(cards);
     numbersOfCards.sort((a, b) => a - b);
-    let score = this.getStraightFlush(cards);
+    let score = RankingCalculator.getStraightFlush(cards);
     if (score > 0) return score;
-    score = this.getFourCards(numbersOfCards);
+    score = RankingCalculator.getFourCards(numbersOfCards);
     if (score > 0) return score;
-    score = this.getFullHouse(numbersOfCards);
+    score = RankingCalculator.getFullHouse(numbersOfCards);
     if (score > 0) return score;
-    score = this.getFlush(cards);
+    score = RankingCalculator.getFlush(cards);
     if (score > 0) return score;
-    score = this.getStraight(numbersOfCards);
+    score = RankingCalculator.getStraight(numbersOfCards);
     if (score > 0) return score;
-    score = this.getTriple(numbersOfCards);
+    score = RankingCalculator.getTriple(numbersOfCards);
     if (score > 0) return score;
-    score = this.getTwoPair(numbersOfCards);
+    score = RankingCalculator.getTwoPair(numbersOfCards);
     if (score > 0) return score;
-    score = this.getOnePair(numbersOfCards);
+    score = RankingCalculator.getOnePair(numbersOfCards);
     if (score > 0) return score;
-    return this.getHighCard(numbersOfCards);
+    return RankingCalculator.getHighCard(numbersOfCards);
   }
 
-  private getHighCard(numbers: number[]): number {
+  private static getHighCard(numbers: number[]): number {
     numbers.sort((a, b) => b - a);
     let result = 0;
     for (let i = 0; i < 5; i++) {
@@ -32,28 +32,29 @@ export class RankingCalculator {
     return result;
   }
 
-  private convertToNumber(cards: Card[]): number[] {
+  private static convertToNumber(cards: Card[]): number[] {
     return cards.map((card) => card.getValue());
   }
 
-  private getStraightFlush(cards: Card[]): number {
-    const mostSuit = this.getMostSuited(cards);
+  private static getStraightFlush(cards: Card[]): number {
+    const mostSuit = RankingCalculator.getMostSuited(cards);
     const sorted = cards
       .filter((card) => card.getSuit() === mostSuit)
       .sort((a, b) => a.getValue() - b.getValue());
     if (sorted.length < 5) return 0;
-    const numbers = this.convertToNumber(sorted);
+    const numbers = RankingCalculator.convertToNumber(sorted);
     for (let i = numbers.length - 5; i >= 0; i--) {
-      if (this.isStraight(numbers, i, i + 5))
+      if (RankingCalculator.isStraight(numbers, i, i + 5))
         return Ranking.STRAIGHT_FLUSH + numbers[i + 4];
     }
     if (numbers[numbers.length - 1] === 14) {
-      if (this.isLowAceStraight(numbers)) return Ranking.STRAIGHT_FLUSH + 5;
+      if (RankingCalculator.isLowAceStraight(numbers))
+        return Ranking.STRAIGHT_FLUSH + 5;
     }
     return 0;
   }
 
-  private getMostSuited(cards: Card[]): Suit {
+  private static getMostSuited(cards: Card[]): Suit {
     let mostSuit: Suit = Suit.CLUBS;
     let most = 0;
     for (const card of cards) {
@@ -66,14 +67,19 @@ export class RankingCalculator {
     return mostSuit;
   }
 
-  private getFourCards(cardNumbers: number[]): number {
-    const count = this.sameCountAsExpected(cardNumbers, 4);
+  private static getFourCards(cardNumbers: number[]): number {
+    const count = RankingCalculator.sameCountAsExpected(cardNumbers, 4);
     if (count === 0) return 0;
-    const highCard = Math.max(...this.getListWithoutSame(cardNumbers, 4));
+    const highCard = Math.max(
+      ...RankingCalculator.getListWithoutSame(cardNumbers, 4)
+    );
     return Ranking.FOUR_CARDS + count * 2 + highCard;
   }
 
-  private sameCountAsExpected(cardNumbers: number[], expected: number): number {
+  private static sameCountAsExpected(
+    cardNumbers: number[],
+    expected: number
+  ): number {
     for (const number of cardNumbers) {
       const count = cardNumbers.filter(
         (cardNumber) => cardNumber === number
@@ -83,17 +89,20 @@ export class RankingCalculator {
     return 0;
   }
 
-  private getFullHouse(cardNumbers: number[]): number {
-    const leftWithoutTriple = this.getListWithoutSame(cardNumbers, 3);
+  private static getFullHouse(cardNumbers: number[]): number {
+    const leftWithoutTriple = RankingCalculator.getListWithoutSame(
+      cardNumbers,
+      3
+    );
     if (leftWithoutTriple.length === 0) return 0;
-    const triple = this.getHighestTriple(cardNumbers);
-    const pairValue = this.getValueOfSamePair(leftWithoutTriple);
+    const triple = RankingCalculator.getHighestTriple(cardNumbers);
+    const pairValue = RankingCalculator.getValueOfSamePair(leftWithoutTriple);
     if (pairValue > 0)
       return Ranking.FULL_HOUSE + triple[0] * 3 + pairValue * 2;
     return 0;
   }
 
-  private getValueOfSamePair(numbers: number[]): number {
+  private static getValueOfSamePair(numbers: number[]): number {
     let result = 0;
     for (const number of numbers) {
       const count = numbers.filter((n) => n === number).length;
@@ -102,7 +111,7 @@ export class RankingCalculator {
     return result;
   }
 
-  private getHighestTriple(numbers: number[]): number[] {
+  private static getHighestTriple(numbers: number[]): number[] {
     let result: number[] = [];
     for (const number of numbers) {
       const count = numbers.filter(
@@ -114,7 +123,10 @@ export class RankingCalculator {
     return result;
   }
 
-  private getListWithoutSame(numbers: number[], sameCount: number): number[] {
+  private static getListWithoutSame(
+    numbers: number[],
+    sameCount: number
+  ): number[] {
     for (const number of numbers) {
       const count = numbers.filter(
         (cardNumber) => cardNumber === number
@@ -125,9 +137,9 @@ export class RankingCalculator {
     return [];
   }
 
-  private getFlush(cards: Card[]): number {
-    if (this.isFlush(cards)) {
-      const mostSuit = this.getMostSuited(cards);
+  private static getFlush(cards: Card[]): number {
+    if (RankingCalculator.isFlush(cards)) {
+      const mostSuit = RankingCalculator.getMostSuited(cards);
       const highValue = Math.max(
         ...cards
           .filter((card) => card.getSuit() === mostSuit)
@@ -138,7 +150,7 @@ export class RankingCalculator {
     return 0;
   }
 
-  private isFlush(cards: Card[]): boolean {
+  private static isFlush(cards: Card[]): boolean {
     for (const card of cards) {
       const count = cards.filter((c) => c.getSuit() === card.getSuit()).length;
       if (count >= 5) return true;
@@ -146,26 +158,31 @@ export class RankingCalculator {
     return false;
   }
 
-  private getStraight(cardNumbers: number[]): number {
+  private static getStraight(cardNumbers: number[]): number {
     cardNumbers = Array.from(new Set(cardNumbers));
     for (let i = cardNumbers.length - 5; i >= 0; i--) {
-      if (this.isStraight(cardNumbers, i, i + 5))
+      if (RankingCalculator.isStraight(cardNumbers, i, i + 5))
         return Ranking.STRAIGHT + cardNumbers[i + 4];
     }
     if (cardNumbers[cardNumbers.length - 1] === 14) {
-      if (this.isLowAceStraight(cardNumbers)) return Ranking.STRAIGHT + 5;
+      if (RankingCalculator.isLowAceStraight(cardNumbers))
+        return Ranking.STRAIGHT + 5;
     }
     return 0;
   }
 
-  private isStraight(numbers: number[], start: number, end: number): boolean {
+  private static isStraight(
+    numbers: number[],
+    start: number,
+    end: number
+  ): boolean {
     for (let i = start + 1; i < end; i++) {
       if (numbers[i - 1] + 1 !== numbers[i]) return false;
     }
     return true;
   }
 
-  private isLowAceStraight(cards: number[]): boolean {
+  private static isLowAceStraight(cards: number[]): boolean {
     if (cards[0] !== 2) return false;
     for (let i = 1; i < 4; i++) {
       if (cards[i - 1] + 1 !== cards[i]) return false;
@@ -173,14 +190,14 @@ export class RankingCalculator {
     return true;
   }
 
-  private getTriple(cardNumbers: number[]): number {
-    const count = this.sameCountAsExpected(cardNumbers, 3);
+  private static getTriple(cardNumbers: number[]): number {
+    const count = RankingCalculator.sameCountAsExpected(cardNumbers, 3);
     if (count === 0) return 0;
     const sorted = cardNumbers.filter((c) => c !== count).sort((a, b) => b - a);
     return Ranking.TRIPLE + count * 3 + sorted[0] * 2 + sorted[1];
   }
 
-  private getTwoPair(cardNumbers: number[]): number {
+  private static getTwoPair(cardNumbers: number[]): number {
     const result: number[] = [];
     let highCard = 0;
     for (const number of cardNumbers) {
@@ -197,7 +214,7 @@ export class RankingCalculator {
     return Ranking.TWO_PAIR + sorted[0] * 3 + sorted[2] * 2 + highCard;
   }
 
-  private getOnePair(cardNumbers: number[]): number {
+  private static getOnePair(cardNumbers: number[]): number {
     for (const number of cardNumbers) {
       const count = cardNumbers.filter(
         (cardNumber) => cardNumber === number

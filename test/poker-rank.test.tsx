@@ -9,13 +9,11 @@ describe("poker rank test", () => {
   let cards: Card[];
   let lower: Card[];
   let higher: Card[];
-  let rankingCalculator: RankingCalculator;
 
   beforeEach(() => {
     cards = [];
     lower = [];
     higher = [];
-    rankingCalculator = new RankingCalculator();
   });
 
   it("can calculate one pair", () => {
@@ -28,7 +26,7 @@ describe("poker rank test", () => {
       Card.of(7, Suit.HEARTS),
       Card.of(9, Suit.HEARTS)
     );
-    const rank = getRank(rankingCalculator.calculateCards(cards));
+    const rank = getRank(RankingCalculator.calculateCards(cards));
     expect(rank).toBe(RankingString.ONE_PAIR);
   });
 
@@ -51,8 +49,8 @@ describe("poker rank test", () => {
       Card.of(7, Suit.HEARTS),
       Card.of(10, Suit.HEARTS)
     );
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
 
     lower = [];
@@ -75,8 +73,8 @@ describe("poker rank test", () => {
       Card.of(7, Suit.HEARTS),
       Card.of(9, Suit.HEARTS)
     );
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
   });
 
@@ -90,7 +88,7 @@ describe("poker rank test", () => {
       Card.of(7, Suit.HEARTS),
       Card.of(9, Suit.HEARTS)
     );
-    const rank = getRank(rankingCalculator.calculateCards(cards));
+    const rank = getRank(RankingCalculator.calculateCards(cards));
     expect(rank).toBe(RankingString.TWO_PAIR);
   });
 
@@ -115,8 +113,8 @@ describe("poker rank test", () => {
       Card.of(13, Suit.DIAMONDS),
     ];
 
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
 
     lower.length = 0;
@@ -142,8 +140,8 @@ describe("poker rank test", () => {
       Card.of(9, Suit.HEARTS)
     );
 
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
 
     lower.length = 0;
@@ -169,8 +167,8 @@ describe("poker rank test", () => {
       Card.of(9, Suit.HEARTS)
     );
 
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
   });
 
@@ -185,7 +183,7 @@ describe("poker rank test", () => {
       Card.of(11, Suit.DIAMONDS),
     ];
 
-    const rank = getRank(rankingCalculator.calculateCards(cards));
+    const rank = getRank(RankingCalculator.calculateCards(cards));
     expect(rank).toBe(RankingString.TRIPLE);
   });
 
@@ -210,12 +208,12 @@ describe("poker rank test", () => {
       Card.of(13, Suit.DIAMONDS),
     ];
 
-    let lowerRank = getRank(rankingCalculator.calculateCards(lower));
-    let higherRank = getRank(rankingCalculator.calculateCards(higher));
+    let lowerRank = getRank(RankingCalculator.calculateCards(lower));
+    let higherRank = getRank(RankingCalculator.calculateCards(higher));
     expect(lowerRank).toBe(RankingString.TRIPLE);
     expect(higherRank).toBe(RankingString.TRIPLE);
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
 
     lower.length = 0;
@@ -241,12 +239,12 @@ describe("poker rank test", () => {
       Card.of(9, Suit.HEARTS)
     );
 
-    lowerRank = getRank(rankingCalculator.calculateCards(lower));
-    higherRank = getRank(rankingCalculator.calculateCards(higher));
+    lowerRank = getRank(RankingCalculator.calculateCards(lower));
+    higherRank = getRank(RankingCalculator.calculateCards(higher));
     expect(lowerRank).toBe(RankingString.TRIPLE);
     expect(higherRank).toBe(RankingString.TRIPLE);
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
 
     lower.length = 0;
@@ -272,12 +270,12 @@ describe("poker rank test", () => {
       Card.of(9, Suit.HEARTS)
     );
 
-    lowerRank = getRank(rankingCalculator.calculateCards(lower));
-    higherRank = getRank(rankingCalculator.calculateCards(higher));
+    lowerRank = getRank(RankingCalculator.calculateCards(lower));
+    higherRank = getRank(RankingCalculator.calculateCards(higher));
     expect(lowerRank).toBe(RankingString.TRIPLE);
     expect(higherRank).toBe(RankingString.TRIPLE);
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
   });
 
@@ -292,7 +290,7 @@ describe("poker rank test", () => {
       Card.of(3, Suit.HEARTS),
     ];
 
-    let rank = getRank(rankingCalculator.calculateCards(cards));
+    let rank = getRank(RankingCalculator.calculateCards(cards));
     expect(rank).toBe(RankingString.STRAIGHT);
 
     cards = [];
@@ -307,7 +305,7 @@ describe("poker rank test", () => {
       Card.of(11, Suit.HEARTS),
     ];
 
-    rank = getRank(rankingCalculator.calculateCards(cards));
+    rank = getRank(RankingCalculator.calculateCards(cards));
     expect(rank).toBe(RankingString.STRAIGHT);
   });
 
@@ -332,12 +330,12 @@ describe("poker rank test", () => {
       Card.of(6, Suit.DIAMONDS),
     ];
 
-    let lowerRank = getRank(rankingCalculator.calculateCards(lower));
-    let higherRank = getRank(rankingCalculator.calculateCards(higher));
+    let lowerRank = getRank(RankingCalculator.calculateCards(lower));
+    let higherRank = getRank(RankingCalculator.calculateCards(higher));
     expect(lowerRank).toBe(RankingString.STRAIGHT);
     expect(higherRank).toBe(RankingString.STRAIGHT);
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
 
     lower.length = 0;
@@ -363,12 +361,12 @@ describe("poker rank test", () => {
       Card.of(9, Suit.HEARTS)
     );
 
-    lowerRank = getRank(rankingCalculator.calculateCards(lower));
-    higherRank = getRank(rankingCalculator.calculateCards(higher));
+    lowerRank = getRank(RankingCalculator.calculateCards(lower));
+    higherRank = getRank(RankingCalculator.calculateCards(higher));
     expect(lowerRank).toBe(RankingString.STRAIGHT);
     expect(higherRank).toBe(RankingString.STRAIGHT);
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
   });
 
@@ -383,7 +381,7 @@ describe("poker rank test", () => {
       Card.of(4, Suit.SPADES),
     ];
 
-    const rank = getRank(rankingCalculator.calculateCards(cards));
+    const rank = getRank(RankingCalculator.calculateCards(cards));
     expect(rank).toBe(RankingString.FLUSH);
   });
 
@@ -408,12 +406,12 @@ describe("poker rank test", () => {
       Card.of(9, Suit.HEARTS),
     ];
 
-    let lowerRank = getRank(rankingCalculator.calculateCards(lower));
-    let higherRank = getRank(rankingCalculator.calculateCards(higher));
+    let lowerRank = getRank(RankingCalculator.calculateCards(lower));
+    let higherRank = getRank(RankingCalculator.calculateCards(higher));
     expect(lowerRank).toBe(RankingString.FLUSH);
     expect(higherRank).toBe(RankingString.FLUSH);
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
   });
 
@@ -428,7 +426,7 @@ describe("poker rank test", () => {
       Card.of(9, Suit.HEARTS),
     ];
 
-    const rank = getRank(rankingCalculator.calculateCards(cards));
+    const rank = getRank(RankingCalculator.calculateCards(cards));
     expect(rank).toBe(RankingString.FULL_HOUSE);
   });
 
@@ -453,12 +451,12 @@ describe("poker rank test", () => {
       Card.of(6, Suit.DIAMONDS),
     ];
 
-    let lowerRank = getRank(rankingCalculator.calculateCards(lower));
-    let higherRank = getRank(rankingCalculator.calculateCards(higher));
+    let lowerRank = getRank(RankingCalculator.calculateCards(lower));
+    let higherRank = getRank(RankingCalculator.calculateCards(higher));
     expect(lowerRank).toBe(RankingString.FULL_HOUSE);
     expect(higherRank).toBe(RankingString.FULL_HOUSE);
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
 
     lower.length = 0;
@@ -484,12 +482,12 @@ describe("poker rank test", () => {
       Card.of(9, Suit.HEARTS)
     );
 
-    lowerRank = getRank(rankingCalculator.calculateCards(lower));
-    higherRank = getRank(rankingCalculator.calculateCards(higher));
+    lowerRank = getRank(RankingCalculator.calculateCards(lower));
+    higherRank = getRank(RankingCalculator.calculateCards(higher));
     expect(lowerRank).toBe(RankingString.FULL_HOUSE);
     expect(higherRank).toBe(RankingString.FULL_HOUSE);
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
 
     lower.length = 0;
@@ -515,12 +513,12 @@ describe("poker rank test", () => {
       Card.of(9, Suit.HEARTS)
     );
 
-    lowerRank = getRank(rankingCalculator.calculateCards(lower));
-    higherRank = getRank(rankingCalculator.calculateCards(higher));
+    lowerRank = getRank(RankingCalculator.calculateCards(lower));
+    higherRank = getRank(RankingCalculator.calculateCards(higher));
     expect(lowerRank).toBe(RankingString.FULL_HOUSE);
     expect(higherRank).toBe(RankingString.FULL_HOUSE);
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
   });
 
@@ -533,7 +531,7 @@ describe("poker rank test", () => {
       Card.of(4, Suit.CLUBS),
     ];
 
-    const rank = getRank(rankingCalculator.calculateCards(cards));
+    const rank = getRank(RankingCalculator.calculateCards(cards));
     expect(rank).toBe(RankingString.FOUR_CARDS);
   });
 
@@ -558,12 +556,12 @@ describe("poker rank test", () => {
       Card.of(6, Suit.DIAMONDS),
     ];
 
-    let lowerRank = getRank(rankingCalculator.calculateCards(lower));
-    let higherRank = getRank(rankingCalculator.calculateCards(higher));
+    let lowerRank = getRank(RankingCalculator.calculateCards(lower));
+    let higherRank = getRank(RankingCalculator.calculateCards(higher));
     expect(lowerRank).toBe(RankingString.FOUR_CARDS);
     expect(higherRank).toBe(RankingString.FOUR_CARDS);
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
 
     lower.length = 0;
@@ -589,12 +587,12 @@ describe("poker rank test", () => {
       Card.of(9, Suit.HEARTS)
     );
 
-    lowerRank = getRank(rankingCalculator.calculateCards(lower));
-    higherRank = getRank(rankingCalculator.calculateCards(higher));
+    lowerRank = getRank(RankingCalculator.calculateCards(lower));
+    higherRank = getRank(RankingCalculator.calculateCards(higher));
     expect(lowerRank).toBe(RankingString.FOUR_CARDS);
     expect(higherRank).toBe(RankingString.FOUR_CARDS);
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
   });
 
@@ -609,7 +607,7 @@ describe("poker rank test", () => {
       Card.of(7, Suit.CLUBS),
     ];
 
-    const rank = getRank(rankingCalculator.calculateCards(cards));
+    const rank = getRank(RankingCalculator.calculateCards(cards));
     expect(rank).toBe(RankingString.STRAIGHT_FLUSH);
   });
 
@@ -634,12 +632,12 @@ describe("poker rank test", () => {
       Card.of(6, Suit.HEARTS),
     ];
 
-    let lowerRank = getRank(rankingCalculator.calculateCards(lower));
-    let higherRank = getRank(rankingCalculator.calculateCards(higher));
+    let lowerRank = getRank(RankingCalculator.calculateCards(lower));
+    let higherRank = getRank(RankingCalculator.calculateCards(higher));
     expect(lowerRank).toBe(RankingString.STRAIGHT_FLUSH);
     expect(higherRank).toBe(RankingString.STRAIGHT_FLUSH);
-    expect(rankingCalculator.calculateCards(lower)).toBeLessThan(
-      rankingCalculator.calculateCards(higher)
+    expect(RankingCalculator.calculateCards(lower)).toBeLessThan(
+      RankingCalculator.calculateCards(higher)
     );
   });
 });

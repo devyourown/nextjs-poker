@@ -11,3 +11,9 @@
 - make database
 - core poker function
 - core poker function tests
+- ~~rank function~~
+- ~~rank tests~~
+- ~~deck function~~
+- ~~deck tests~~
+- ~~game function~~
+- game tests
