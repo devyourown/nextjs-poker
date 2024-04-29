@@ -24,3 +24,17 @@ export async function fetchMoney(user_id: string) {
     throw new Error("Failed to fetch money.");
   }
 }
+
+export async function updateMoney(user_id: string, money: number) {
+  try {
+    console.log("Updateing money data");
+    await pool.query(
+      `
+    UPDATE money SET money = $1 WHERE id = $2`,
+      [money, user_id]
+    );
+  } catch (error) {
+    console.log("Database Error: ", error);
+    throw new Error("Failed to update money.");
+  }
+}
