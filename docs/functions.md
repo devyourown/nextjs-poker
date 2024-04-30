@@ -5,7 +5,7 @@
 - action ui
 - ~~login ui~~
 - ~~signup UI, function~~
-- waiting room ui
+- board ui
 - entering room function
 - playing in room function
 - ~~login function~~
@@ -18,3 +18,4 @@
 - ~~deck tests~~
 - ~~game function~~
 - game tests
+- oauth2

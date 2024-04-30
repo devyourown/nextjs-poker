@@ -12,3 +12,8 @@ export type Money = {
   user_id: string;
   amount: number;
 };
+
+export type Chat = {
+  author: string;
+  content: string;
+};
