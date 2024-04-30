@@ -10,6 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Button } from "./button";
 import { useFormStatus } from "react-dom";
+import Link from "next/link";
 
 export default function LoginForm() {
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);
@@ -72,6 +73,9 @@ export default function LoginForm() {
             </>
           )}
         </div>
+        <Link href={"/signup"}>
+          <p className="hidden md:block">Sign up</p>
+        </Link>
       </div>
     </form>
   );

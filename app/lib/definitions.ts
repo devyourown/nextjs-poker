@@ -2,7 +2,9 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  password: string;
+  imageSrc?: string;
+  money?: number;
+  password?: string;
 };
 
 export type Money = {

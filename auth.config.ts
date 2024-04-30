@@ -10,9 +10,9 @@ export const authConfig = {
       const isOnBoard = nextUrl.pathname.startsWith("/board");
       if (isOnBoard) {
         if (isLoggedIn) return true;
-        return false;
+        return Response.redirect(new URL("/login", nextUrl));
       } else if (isLoggedIn) {
-        return Response.redirect(new URL("/board"));
+        return Response.redirect(new URL("/board", nextUrl));
       }
       return true;
     },

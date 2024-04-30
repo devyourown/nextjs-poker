@@ -4,6 +4,7 @@
 - room ui
 - action ui
 - ~~login ui~~
+- ~~signup UI, function~~
 - waiting room ui
 - entering room function
 - playing in room function

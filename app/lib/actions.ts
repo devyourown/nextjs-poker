@@ -1,5 +1,6 @@
 "use server";
 
+import bcrypt from "bcrypt";
 import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
 import { z } from "zod";
@@ -11,7 +12,7 @@ export async function authenticate(
   form: FormData
 ) {
   try {
-    await signIn("credentials", form);
+    const user = await signIn("credentials", form);
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
@@ -21,7 +22,9 @@ export async function authenticate(
           return "Something went wrong.";
       }
     }
+    throw error;
   }
+  redirect("/board");
 }
 
 const CreateAccount = z.object({
@@ -43,7 +46,7 @@ export type State = {
 
 export async function createAccount(prevState: State, form: FormData) {
   const validateFields = CreateAccount.safeParse({
-    name: form.get("name"),
+    name: form.get("nickname"),
     email: form.get("email"),
     password: form.get("password"),
   });
@@ -54,14 +57,22 @@ export async function createAccount(prevState: State, form: FormData) {
       message: "Missing Fields. Failed to create Account.",
     };
   }
-
   const { name, email, password } = validateFields.data;
-
+  const hashedPassword = await bcrypt.hash(password, 10);
   try {
     await pool.query(
-      `INSERT INTO user (name, email, password)
+      `INSERT INTO users (name, email, password)
       VALUES ($1, $2, $3)`,
-      [name, email, password]
+      [name, email, hashedPassword]
+    );
+    const res = await pool.query("SELECT id FROM users WHERE name = $1", [
+      name,
+    ]);
+    const { id } = res.rows[0];
+    await pool.query(
+      `INSERT INTO money (user_id, amount)
+      VALUES ($1, $2)`,
+      [id, 100000]
     );
   } catch (e) {
     return {
