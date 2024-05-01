@@ -6,6 +6,7 @@ import Action from "@/app/ui/action-form";
 import Cards from "@/app/ui/cards";
 import Chatting from "@/app/ui/chat-form";
 import PlayerSeat from "@/app/ui/player-seat";
+import { PlayingButton } from "@/app/ui/playing-button";
 import { auth } from "@/auth";
 import { Card } from "@/core/deck/Card";
 import { RandomDeck } from "@/core/deck/Deck";
@@ -42,7 +43,6 @@ const chat = [
 async function getRoomAndPlayer() {
   const session = await auth();
   const user = session?.user as User;
-  console.log(user.roomId);
   const room = findRoom(user.roomId!);
   const player = room?.getPlayer(user.name);
   return [room, player] as [Room, Player];
@@ -96,12 +96,11 @@ export default async function Page() {
           <PlayerSeat players={room.getUsers()} />
 
           {!room.isPlaying() && (
-            <button
-              onClick={() => handleReady()}
-              className="absolute bg-blue-500 text-white px-6 py-3 rounded-full mt-36"
-            >
-              {player.ready() ? "not ready" : "ready"}
-            </button>
+            <PlayingButton
+              name={player.getId()}
+              ready={player.ready()}
+              roomId={room.getId()}
+            />
           )}
         </div>
       )}
@@ -111,7 +110,7 @@ export default async function Page() {
           currentBet={input.getCurrentBet()!}
           playerMoney={player.getMoney()}
           isPlayerTurn={input.isPlayerTurn(player)}
-          changeAction={changeAction}
+          roomId={room.getId()}
         />
       )}
 

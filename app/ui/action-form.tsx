@@ -7,13 +7,14 @@ import { Player } from "@/core/game/Table";
 import { Action, UserAction } from "@/core/game/Game";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { validateUserAction } from "@/error/Validator";
+import { findRoom } from "../lib/room";
 
 interface ActionFormProps {
   actions: string[];
   currentBet: number;
   playerMoney: number;
   isPlayerTurn: boolean;
-  changeAction: (a: UserAction) => void;
+  roomId: string;
 }
 
 function convertToUserAction(action: any) {
@@ -39,7 +40,7 @@ export default function Actions({
   currentBet,
   playerMoney,
   isPlayerTurn,
-  changeAction,
+  roomId,
 }: ActionFormProps) {
   const [error, setError] = useState("");
   const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
@@ -55,7 +56,7 @@ export default function Actions({
     if (validated.error !== null) {
       setError(validated.error!);
     } else {
-      changeAction(convertToUserAction(validated.success));
+      findRoom(roomId)?.setAction(convertToUserAction(validated.success));
     }
   };
   return (

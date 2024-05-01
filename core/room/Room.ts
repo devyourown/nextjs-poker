@@ -1,5 +1,7 @@
 import { User } from "@/app/lib/definitions";
 import { Player } from "../game/Table";
+import { FormInput } from "@/app/lib/FormInput";
+import { UserAction } from "../game/Game";
 
 export class Room {
   private roomId: string;
@@ -7,6 +9,7 @@ export class Room {
   private players: Player[];
   private users: User[];
   private numOfReady;
+  private input: FormInput | null;
 
   constructor() {
     this.roomId = Math.random().toString(36);
@@ -14,6 +17,7 @@ export class Room {
     this.players = [];
     this.users = [];
     this.numOfReady = 0;
+    this.input = null;
   }
 
   addUser(user: User) {
@@ -57,6 +61,10 @@ export class Room {
 
   getId() {
     return this.roomId;
+  }
+
+  setAction(action: UserAction) {
+    this.input?.setCurrentAction(action);
   }
 }
 
