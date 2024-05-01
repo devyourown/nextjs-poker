@@ -5,10 +5,13 @@ import { auth, signOut } from "@/auth";
 import { PowerIcon } from "@heroicons/react/24/outline";
 import { redirect } from "next/navigation";
 import { User } from "../lib/definitions";
+import { Player } from "@/core/game/Table";
+import { findEmptyRoom } from "../lib/room";
 
 export default async function Page() {
   const session = await auth();
   const user = session!.user as User;
+  const player = new Player(user.name, user.money!);
   return (
     session && (
       <div className="flex h-full w-full">
@@ -21,7 +24,7 @@ export default async function Page() {
             <p>Your Money : ${Number(user.money)}</p>
           </div>
           <div className="content-center">
-            <button>Go to Play</button>
+            <button onClick={() => findEmptyRoom(player)}>Go to Play</button>
           </div>
           <div className="content-center">
             <form

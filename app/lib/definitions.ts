@@ -1,5 +1,6 @@
 export type User = {
   id: string;
+  roomId?: string;
   name: string;
   email: string;
   imageSrc?: string;
@@ -16,4 +17,14 @@ export type Money = {
 export type Chat = {
   author: string;
   content: string;
+};
+
+export type Card = {
+  suit: "hearts" | "diamonds" | "clubs" | "spades";
+  number: number;
+};
+
+export type Room = {
+  roomId: string;
+  roomStatus: "playing" | "fulled" | "spacious";
 };
