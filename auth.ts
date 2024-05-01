@@ -20,16 +20,16 @@ async function getUser(email: string): Promise<User | undefined> {
 
 async function getPlayer(email: string): Promise<User | undefined> {
   try {
-    const user = await pool.query<User>(`SELECT * FROM users WHERE email=$1`, [
-      email,
-    ]);
+    const user = await pool.query<User>(
+      `SELECT id, name FROM users WHERE email=$1`,
+      [email]
+    );
     const money = await pool.query<Money>(
       `SELECT amount FROM money WHERE user_id=$1`,
       [user.rows[0].id]
     );
     return {
       money: money.rows[0].amount,
-      password: undefined,
       ...user.rows[0],
     } as User;
   } catch (error) {
@@ -38,7 +38,7 @@ async function getPlayer(email: string): Promise<User | undefined> {
   }
 }
 
-export const { auth, signIn, signOut } = NextAuth({
+export const { auth, signIn, signOut, unstable_update } = NextAuth({
   ...authConfig,
   providers: [
     credentials({
@@ -60,11 +60,20 @@ export const { auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  session: {
+    strategy: "jwt",
+    maxAge: 10 * 24 * 60 * 60,
+  },
   callbacks: {
-    async session({ session }) {
-      const user = await getPlayer(session.user.email);
-      session.user = user as any;
+    async session({ session, token }) {
+      if (!session.user.money)
+        session.user = (await getPlayer(session.user.email)) as any;
+      if (token.roomId) session.user.roomId = token.roomId as string;
       return session;
+    },
+    async jwt({ session, trigger, token }) {
+      if (trigger === "update") token.roomId = session.user.roomId;
+      return token;
     },
   },
 });

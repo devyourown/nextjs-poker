@@ -26,11 +26,6 @@ export class FormOutput implements Output {
   }
 
   getBoard() {
-    return this.dealer?.getBoard().map((card) => {
-      return {
-        suit: card.getSuit().toString().toLowerCase(),
-        number: card.getValue(),
-      } as Card;
-    });
+    return this.dealer?.getBoard();
   }
 }

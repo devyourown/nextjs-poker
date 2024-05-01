@@ -6,13 +6,14 @@ import { AuthError } from "next-auth";
 import { z } from "zod";
 import { pool } from "./data";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export async function authenticate(
   prevState: string | undefined,
   form: FormData
 ) {
   try {
-    const user = await signIn("credentials", form);
+    await signIn("credentials", form);
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
@@ -24,6 +25,7 @@ export async function authenticate(
     }
     throw error;
   }
+  revalidatePath("/board");
   redirect("/board");
 }
 

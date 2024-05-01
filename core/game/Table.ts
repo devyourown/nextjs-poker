@@ -8,6 +8,7 @@ export class Player {
   private possibleTakingAmountOfMoney: number;
   private beforeBetMoney: number;
   private betSize: number;
+  private isReady: boolean;
 
   constructor(id: string, money: number) {
     this.id = id;
@@ -17,6 +18,15 @@ export class Player {
     this.possibleTakingAmountOfMoney = 0;
     this.betSize = 0;
     this.hands = [];
+    this.isReady = false;
+  }
+
+  ready() {
+    return this.isReady;
+  }
+
+  changeReady() {
+    this.isReady = !this.isReady;
   }
 
   dead(): void {
@@ -46,7 +56,7 @@ export class Player {
     this.hands = [...cards];
   }
 
-  getHands(): ReadonlyArray<Card> {
+  getHands(): Array<Card> {
     return this.hands;
   }
 

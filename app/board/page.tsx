@@ -1,7 +1,5 @@
-"use server";
-
 import Avatar from "../ui/avatar";
-import { auth, signOut } from "@/auth";
+import { auth, signOut, unstable_update } from "@/auth";
 import { PowerIcon } from "@heroicons/react/24/outline";
 import { redirect } from "next/navigation";
 import { User } from "../lib/definitions";
@@ -11,7 +9,6 @@ import { findEmptyRoom } from "../lib/room";
 export default async function Page() {
   const session = await auth();
   const user = session!.user as User;
-  const player = new Player(user.name, user.money!);
   return (
     session && (
       <div className="flex h-full w-full">
@@ -24,14 +21,26 @@ export default async function Page() {
             <p>Your Money : ${Number(user.money)}</p>
           </div>
           <div className="content-center">
-            <button onClick={() => findEmptyRoom(player)}>Go to Play</button>
+            <form
+              action={async () => {
+                "use server";
+                const player = new Player(user.name, user.money!);
+                const room = findEmptyRoom();
+                room.addPlayer(player);
+                room.addUser(user);
+                user.roomId = room.getId();
+                unstable_update({ user: { roomId: room.getId(), ...user } });
+                redirect("/board/room");
+              }}
+            >
+              <button>Go to Play</button>
+            </form>
           </div>
           <div className="content-center">
             <form
               action={async () => {
                 "use server";
                 await signOut();
-                redirect("/login");
               }}
             >
               <button className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">

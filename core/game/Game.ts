@@ -150,7 +150,7 @@ export class Game {
   }
 }
 
-enum Action {
+export enum Action {
   FOLD,
   CALL,
   CHECK,
