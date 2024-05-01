@@ -62,10 +62,6 @@ export class Room {
   getId() {
     return this.roomId;
   }
-
-  setAction(action: UserAction) {
-    this.input?.setCurrentAction(action);
-  }
 }
 
 type RoomStatus = "FULL" | "SPACIOUS" | "PLAYING";

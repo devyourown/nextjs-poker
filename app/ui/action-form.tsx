@@ -1,13 +1,10 @@
 "use client";
 
 import Draggable from "react-draggable";
-import { FormInput } from "../lib/FormInput";
-import { SyntheticEvent, useState } from "react";
-import { Player } from "@/core/game/Table";
-import { Action, UserAction } from "@/core/game/Game";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { validateUserAction } from "@/error/Validator";
-import { findRoom } from "../lib/room";
+import { socket } from "../lib/socket";
 
 interface ActionFormProps {
   actions: string[];
@@ -18,11 +15,10 @@ interface ActionFormProps {
 }
 
 function convertToUserAction(action: any) {
-  if (action.action === "FOLD") return { action: Action.FOLD, betSize: 0 };
-  else if (action.action === "CHECK")
-    return { action: Action.CHECK, betSize: 0 };
-  else if (action.action === "CALL") return { action: Action.CALL, betSize: 0 };
-  return { action: Action.BET, betSize: Number(action.amount) };
+  if (action.action === "FOLD") return `FOLD:0`;
+  else if (action.action === "CHECK") return `CHECK:0`;
+  else if (action.action === "CALL") return `CALL:0`;
+  return `BET:${action.amount}`;
 }
 
 export function createUserAction(
@@ -56,7 +52,7 @@ export default function Actions({
     if (validated.error !== null) {
       setError(validated.error!);
     } else {
-      findRoom(roomId)?.setAction(convertToUserAction(validated.success));
+      socket.emit(roomId, convertToUserAction(validated.success));
     }
   };
   return (

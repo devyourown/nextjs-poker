@@ -3,6 +3,7 @@ import { FormOutput } from "@/app/lib/FormOutput";
 import { Card as IOCard, Chat, User } from "@/app/lib/definitions";
 import { findRoom, removeFromCache } from "@/app/lib/room";
 import Action from "@/app/ui/action-form";
+import { Action as IOAction } from "@/core/game/Game";
 import Cards from "@/app/ui/cards";
 import Chatting from "@/app/ui/chat-form";
 import PlayerSeat from "@/app/ui/player-seat";
@@ -13,6 +14,7 @@ import { RandomDeck } from "@/core/deck/Deck";
 import { Game, UserAction } from "@/core/game/Game";
 import { Player } from "@/core/game/Table";
 import { Room } from "@/core/room/Room";
+import { Server } from "socket.io";
 
 const actions = ["Call", "Check", "Fold", "Bet"];
 
@@ -57,14 +59,30 @@ function makeIOCard(cards: Card[]) {
   });
 }
 
+function makeUserAction(action: string, size: string): UserAction {
+  if (action === "BET") return { action: IOAction.BET, betSize: Number(size) };
+  if (action === "FOLD") return { action: IOAction.FOLD, betSize: 0 };
+  if (action === "CALL") return { action: IOAction.CALL, betSize: 0 };
+  if (action === "CHECK") return { action: IOAction.CHECK, betSize: 0 };
+  return { action: IOAction.FOLD, betSize: 0 };
+}
+
 export default async function Page() {
   const [room, player] = await getRoomAndPlayer();
   const input = new FormInput();
   const output = new FormOutput();
-  const changeAction = (userAction: UserAction) => {
-    input.setCurrentAction(userAction);
-  };
-  const handleReady = () => {
+  const io = new Server();
+  io.on(room.getId(), (value) => {
+    const [id, action, size] = value.split(":");
+
+    if (id !== player.getId()) return;
+    input.setCurrentAction(makeUserAction(action, size));
+  });
+  console.log(room.getId() + "btn");
+  io.on(room.getId() + "btn", (value) => {
+    console.log(value);
+    const [name, ready] = value.split(":");
+    if (name !== player.getId()) return;
     player.changeReady();
     if (player.ready()) room.ready();
     else room.notReady();
@@ -79,7 +97,7 @@ export default async function Page() {
         output
       ).play();
     }
-  };
+  });
   return (
     <div className="relative h-screen bg-green-500">
       <div className="flex flex-row w-screen justify-center content-center">
