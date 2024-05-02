@@ -13,46 +13,69 @@ export class Game {
   private foldPlayers: Player[];
   private dealer: Dealer;
   private pot: Pot;
-  private gameId: string;
   private allinPlayers: Player[];
   private leftNumOfResponse: number = 0;
-  private input: Input;
-  private output: Output;
+  private gameStatus: GameStatus;
+  private gameResult: GameResult | null;
 
   constructor(
     players: Player[],
     smallBlind: number,
     bigBlind: number,
     deck: Deck,
-    input: Input,
-    output: Output
+    foldPlayers?: Player[],
+    allInPlayers?: Player[],
+    gameStatus?: GameStatus,
+    gameResult?: GameResult
   ) {
-    this.gameId = Math.random().toString(36).substring(7);
+    if (foldPlayers) {
+      this.players = [...players];
+      this.playerTable = new PlayerTable(players);
+      this.pot = new Pot(players, smallBlind, bigBlind);
+      this.dealer = new Dealer(players, deck);
+      this.foldPlayers = foldPlayers!;
+      this.allinPlayers = allInPlayers!;
+      this.gameStatus = gameStatus!;
+      this.gameResult = gameResult!;
+      return;
+    }
     this.players = [...players];
     this.playerTable = new PlayerTable(players);
     this.pot = new Pot(players, smallBlind, bigBlind);
     this.dealer = new Dealer(players, deck);
     this.foldPlayers = [];
     this.allinPlayers = [];
-    this.input = input;
-    this.output = output;
+    this.gameStatus = GameStatus.PRE_FLOP;
+    this.gameResult = null;
   }
 
-  public play(): GameResult {
-    for (const gameStatus of Object.values(GameStatus)) {
-      if (gameStatus === GameStatus.END || this.isEnd()) break;
-      this.leftNumOfResponse = this.playerTable.getSize();
-      this.playUntilTurnOver();
+  public playWith(userAction: UserAction): void {
+    if (this.gameResult !== null) return;
+    this.playAction(userAction.action, userAction.betSize);
+    if (this.isTurnOver() || this.isAllPlayerAllIn()) {
+      this.dealer.nextStatus();
+      this.pot.refresh(this.foldPlayers);
+      this.foldPlayers = [];
     }
-    this.dealer.showDown();
-    let lastPlayers = this.convertTableToList(this.playerTable);
-    lastPlayers = [...lastPlayers, ...this.allinPlayers];
-    lastPlayers = lastPlayers.filter(
-      (player, index, self) =>
-        self.findIndex((p) => p.getId() === player.getId()) === index
-    );
-    this.setPlayersRanking(lastPlayers, this.dealer.getBoard());
-    return new GameResult(lastPlayers, this.players, this.pot);
+    if (this.isEnd() || this.gameStatus === GameStatus.END) {
+      this.dealer.showDown();
+      let lastPlayers = this.convertTableToList(this.playerTable);
+      lastPlayers = [...lastPlayers, ...this.allinPlayers];
+      lastPlayers = lastPlayers.filter(
+        (player, index, self) =>
+          self.findIndex((p) => p.getId() === player.getId()) === index
+      );
+      this.setPlayersRanking(lastPlayers, this.dealer.getBoard());
+      this.gameResult = new GameResult(lastPlayers, this.players, this.pot);
+    }
+  }
+
+  public getCurrentGame(): [Pot, Dealer, Player] {
+    return [this.pot, this.dealer, this.playerTable.getCurrentPlayer()];
+  }
+
+  public getResult() {
+    return this.gameResult;
   }
 
   private convertTableToList(playerTable: PlayerTable): Player[] {
@@ -65,24 +88,6 @@ export class Game {
       player = playerTable.getCurrentPlayer();
     }
     return result;
-  }
-
-  private playUntilTurnOver(): void {
-    while (!this.isTurnOver() && !this.isAllPlayerAllIn()) {
-      this.output.sendCurrentGame(
-        this.pot,
-        this.dealer,
-        this.playerTable.getCurrentPlayer()
-      );
-      const userAction: UserAction = this.input.getUserAction(
-        this.playerTable.getCurrentPlayer(),
-        this.pot
-      );
-      this.playAction(userAction.action, userAction.betSize);
-    }
-    this.dealer.nextStatus();
-    this.pot.refresh(this.foldPlayers);
-    this.foldPlayers = [];
   }
 
   private isTurnOver(): boolean {
@@ -143,10 +148,6 @@ export class Game {
 
   public isEnd(): boolean {
     return this.playerTable.getSize() < 2;
-  }
-
-  public getGameId(): string {
-    return this.gameId;
   }
 }
 

@@ -1,12 +1,9 @@
 import { NextApiRequest } from "next";
-import { findRoom } from "../../lib/room";
-import { NextResponse } from "next/server";
+import { findRoom, saveRoom } from "../../lib/room";
 
-export default function POST(req: NextApiRequest) {
+export default async function POST(req: NextApiRequest) {
   const { roomId, action } = req.body;
-  console.log(roomId);
-  console.log(action);
-  const room = findRoom(roomId);
-  room?.setAction(action);
-  return NextResponse.json("good job");
+  const room = await findRoom(roomId);
+  room?.playAction(action);
+  saveRoom(room!);
 }

@@ -4,7 +4,7 @@ import { PowerIcon } from "@heroicons/react/24/outline";
 import { redirect } from "next/navigation";
 import { User } from "../lib/definitions";
 import { Player } from "@/core/game/Table";
-import { findEmptyRoom } from "../lib/room";
+import { findEmptyRoom, saveRoom } from "../lib/room";
 
 export default async function Page() {
   const session = await auth();
@@ -24,12 +24,12 @@ export default async function Page() {
             <form
               action={async () => {
                 "use server";
-                const player = new Player(user.name, user.money!);
-                const room = findEmptyRoom();
-                room.addPlayer(player);
+                const room = await findEmptyRoom();
+                user.ready = false;
                 room.addUser(user);
                 user.roomId = room.getId();
                 unstable_update({ user: { roomId: room.getId(), ...user } });
+                await saveRoom(room);
                 redirect("/board/room");
               }}
             >

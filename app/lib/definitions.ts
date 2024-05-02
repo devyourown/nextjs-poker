@@ -6,6 +6,7 @@ export type User = {
   imageSrc?: string;
   money?: number;
   password?: string;
+  ready: boolean;
 };
 
 export type Money = {
