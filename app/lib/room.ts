@@ -1,7 +1,10 @@
+import { Card } from "@/core/deck/Card";
+import { DeterminedDeck } from "@/core/deck/Deck";
 import { Game } from "@/core/game/Game";
 import { Player } from "@/core/game/Table";
 import { Room } from "@/core/room/Room";
 import { createClient } from "redis";
+import { convertRealRoom } from "./JSONConverter";
 
 const redisClient = createClient({
   password: process.env.REDIS_PW,
@@ -16,42 +19,6 @@ const DEFAULT_EXPIRATION = 3600;
 redisClient.on("error", (err) => console.error(err));
 
 if (!redisClient.isOpen) redisClient.connect();
-
-function convertPlayers(data: any) {
-  return data.map((player: { id: string; money: number }) => {
-    return new Player(player.id, player.money);
-  });
-}
-
-function convertRealGame(data: any) {
-  if (!data) return null;
-  const {
-    players,
-    smallBlind,
-    bigBlind,
-    deck,
-    foldPlayers,
-    allInPlayers,
-    gameStatus,
-    gameResult,
-  } = data;
-  return new Game(
-    convertPlayers(players),
-    smallBlind,
-    bigBlind,
-    deck,
-    convertPlayers(foldPlayers),
-    convertPlayers(allInPlayers),
-    gameStatus,
-    gameResult
-  );
-}
-
-function convertRealRoom(data: any) {
-  if (!data) return null;
-  const { roomId, status, users, numOfReady, game } = data;
-  return Room.of(roomId, status, users, numOfReady, convertRealGame(game));
-}
 
 export async function findRoom(roomId: string) {
   const room = (await redisClient.hGet("room", roomId)) as string;

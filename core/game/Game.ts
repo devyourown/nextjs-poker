@@ -22,17 +22,20 @@ export class Game {
     players: Player[],
     smallBlind: number,
     bigBlind: number,
-    deck: Deck,
+    deck?: Deck,
     foldPlayers?: Player[],
     allInPlayers?: Player[],
     gameStatus?: GameStatus,
-    gameResult?: GameResult
+    gameResult?: GameResult,
+    playerTable?: Player[],
+    pot?: Pot,
+    dealer?: Dealer
   ) {
     if (foldPlayers) {
       this.players = [...players];
-      this.playerTable = new PlayerTable(players);
-      this.pot = new Pot(players, smallBlind, bigBlind);
-      this.dealer = new Dealer(players, deck);
+      this.playerTable = new PlayerTable(playerTable!);
+      this.pot = pot!;
+      this.dealer = dealer!;
       this.foldPlayers = foldPlayers!;
       this.allinPlayers = allInPlayers!;
       this.gameStatus = gameStatus!;
@@ -41,8 +44,8 @@ export class Game {
     }
     this.players = [...players];
     this.playerTable = new PlayerTable(players);
-    this.pot = new Pot(players, smallBlind, bigBlind);
-    this.dealer = new Dealer(players, deck);
+    this.pot = new Pot(smallBlind, bigBlind, players);
+    this.dealer = new Dealer(players, deck!);
     this.foldPlayers = [];
     this.allinPlayers = [];
     this.gameStatus = GameStatus.PRE_FLOP;

@@ -9,11 +9,30 @@ export class Pot {
   private turnAmount: number = 0;
   private foldAmount: number = 0;
 
-  constructor(players: Player[], smallBlind: number, bigBlind: number) {
+  constructor(
+    smallBlind: number,
+    bigBlind: number,
+    players?: Player[],
+    currentBet?: number,
+    turnAmount?: number,
+    totalAmount?: number,
+    foldAmount?: number,
+    playerBetLog?: Map<Player, number>
+  ) {
+    if (currentBet) {
+      this.smallBlind = smallBlind;
+      this.bigBlind = bigBlind;
+      this.turnAmount = turnAmount!;
+      this.playerBetLog = playerBetLog!;
+      this.totalAmount = totalAmount!;
+      this.foldAmount = foldAmount!;
+      this.currentBet = currentBet;
+      return;
+    }
     this.smallBlind = smallBlind;
     this.bigBlind = bigBlind;
     this.playerBetLog = new Map();
-    this.reset(players);
+    this.reset(players!);
   }
 
   reset(players: Player[]): void {
@@ -165,5 +184,17 @@ export class Pot {
     const takenMoney = this.totalAmount;
     this.totalAmount = 0;
     return takenMoney;
+  }
+
+  toJSON() {
+    return {
+      playerBetLog: Object.fromEntries(this.playerBetLog),
+      smallBlind: this.smallBlind,
+      bigBlind: this.bigBlind,
+      turnAmount: this.turnAmount,
+      totalAmount: this.totalAmount,
+      foldAmount: this.foldAmount,
+      currentBet: this.currentBet,
+    };
   }
 }

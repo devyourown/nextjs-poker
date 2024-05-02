@@ -6,6 +6,20 @@ export interface Deck {
   reset(numOfPlayers: number): void;
 }
 
+export class DeterminedDeck implements Deck {
+  private deck: Card[];
+
+  constructor(cards: Card[]) {
+    this.deck = cards;
+  }
+
+  draw(): Card {
+    if (this.deck.length === 0) throw new DeckError(DeckErrorCode.EMPTY);
+    return this.deck.pop()!;
+  }
+  reset(numOfPlayers: number): void {}
+}
+
 export class RandomDeck implements Deck {
   private deck: Card[] = [];
 

@@ -8,9 +8,26 @@ export class Player {
   private possibleTakingAmountOfMoney: number;
   private beforeBetMoney: number;
   private betSize: number;
-  private isReady: boolean;
 
-  constructor(id: string, money: number) {
+  constructor(
+    id: string,
+    money: number,
+    beforeBetMoney?: number,
+    ranks?: number,
+    possibleTakingAmountOfMoney?: number,
+    betSize?: number,
+    hands?: Card[]
+  ) {
+    if (hands) {
+      this.id = id;
+      this.money = money;
+      this.beforeBetMoney = beforeBetMoney!;
+      this.ranks = ranks!;
+      this.possibleTakingAmountOfMoney = possibleTakingAmountOfMoney!;
+      this.betSize = betSize!;
+      this.hands = hands;
+      return;
+    }
     this.id = id;
     this.money = money;
     this.beforeBetMoney = money;
@@ -18,15 +35,6 @@ export class Player {
     this.possibleTakingAmountOfMoney = 0;
     this.betSize = 0;
     this.hands = [];
-    this.isReady = false;
-  }
-
-  ready() {
-    return this.isReady;
-  }
-
-  changeReady() {
-    this.isReady = !this.isReady;
   }
 
   dead(): void {
@@ -162,5 +170,16 @@ export class PlayerTable {
     if (this.current) {
       this.current = this.current.next;
     }
+  }
+
+  toJSON() {
+    const firstOne = this.current;
+    const result = [firstOne!.player];
+    let next = firstOne!.next;
+    while (next != firstOne) {
+      result.push(next!.player);
+      next = next!.next;
+    }
+    return JSON.stringify(result);
   }
 }

@@ -20,8 +20,10 @@ export type Chat = {
   content: string;
 };
 
+export type StringSuit = "hearts" | "diamonds" | "clubs" | "spades";
+
 export type Card = {
-  suit: "hearts" | "diamonds" | "clubs" | "spades";
+  suit: StringSuit;
   number: number;
 };
 

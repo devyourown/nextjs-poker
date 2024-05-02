@@ -41,7 +41,6 @@ async function getRoomAndUser() {
   const sessionUser = session?.user as User;
   const room = await findRoom(sessionUser.roomId!);
   const user = room?.getUser(sessionUser.name);
-  console.log("user ", user);
   return [room, user] as [Room, User];
 }
 
@@ -58,6 +57,7 @@ export default async function Page() {
   const [room, user] = await getRoomAndUser();
   if (!room) return;
   const [pot, dealer, currentPlayer] = room.getCurrentGame();
+  console.log("cc", currentPlayer);
   let isGameOn = false;
   if (pot) {
     isGameOn = true;
@@ -75,14 +75,14 @@ export default async function Page() {
       )}
       {room && (
         <div className="absolute inset-0 flex justify-center items-center mt-40">
-          <PlayerSeat players={room.getUsers()} />
+          <PlayerSeat users={room.getUsers()} />
 
           {!room.isPlaying() && (
             <PlayingButton name={user.name} roomId={room.getId()} />
           )}
         </div>
       )}
-      {currentPlayer && (
+      {currentPlayer && currentPlayer?.getId() === user.name && (
         <Action
           actions={actions}
           currentBet={isGameOn ? pot!.getCurrentBet() : 0}

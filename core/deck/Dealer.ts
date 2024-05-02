@@ -9,7 +9,20 @@ export class Dealer {
   private gameStatus: GameStatus;
   private players: Player[];
 
-  constructor(players: Player[], deck: Deck) {
+  constructor(
+    players: Player[],
+    deck: Deck,
+    board?: Card[],
+    gameStatus?: GameStatus,
+    replace?: boolean
+  ) {
+    if (replace) {
+      this.players = players;
+      this.deck = deck;
+      this.board = board!;
+      this.gameStatus = gameStatus!;
+      return;
+    }
     this.players = players;
     this.deck = deck;
     this.board = [];

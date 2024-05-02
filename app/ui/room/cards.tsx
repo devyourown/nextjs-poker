@@ -1,4 +1,4 @@
-import { Card } from "../../lib/definitions";
+import { Card } from "@/app/lib/definitions";
 import PlayingCard from "./card";
 
 interface CardsProps {

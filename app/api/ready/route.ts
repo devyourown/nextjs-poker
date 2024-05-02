@@ -1,9 +1,7 @@
 import { findRoom, saveRoom } from "../../lib/room";
 import { Game } from "@/core/game/Game";
 import { RandomDeck } from "@/core/deck/Deck";
-import { FormInput } from "../../lib/FormInput";
-import { FormOutput } from "../../lib/FormOutput";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { User } from "@/app/lib/definitions";
 import { Player } from "@/core/game/Table";
 
@@ -20,7 +18,6 @@ export async function POST(req: Request) {
   const room = await findRoom(roomId);
   if (!room) return;
   room?.ready(name);
-  console.log(room?.isEveryoneReady());
   if (room?.isEveryoneReady()) {
     console.log("your game prepared.");
     if (room.isPlaying()) return;
@@ -28,4 +25,5 @@ export async function POST(req: Request) {
     room.setGame(new Game(players, 1000, 2000, new RandomDeck(players.length)));
   }
   saveRoom(room!);
+  return NextResponse.json("good job");
 }
