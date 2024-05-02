@@ -3,7 +3,6 @@ import { auth, signOut, unstable_update } from "@/auth";
 import { PowerIcon } from "@heroicons/react/24/outline";
 import { redirect } from "next/navigation";
 import { User } from "../lib/definitions";
-import { Player } from "@/core/game/Table";
 import { findEmptyRoom, saveRoom } from "../lib/room";
 
 export default async function Page() {

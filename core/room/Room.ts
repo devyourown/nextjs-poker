@@ -68,7 +68,6 @@ export class Room {
   ready(id: string) {
     const user = this.getUser(id);
     user.ready = !user.ready;
-    console.log("id", this.users);
     if (user.ready) this.numOfReady += 1;
     else this.numOfReady -= 1;
     if (this.numOfReady > 1 && this.numOfReady === this.users.length)

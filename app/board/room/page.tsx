@@ -7,7 +7,6 @@ import PlayerSeat from "@/app/ui/room/player-seat";
 import { PlayingButton } from "@/app/ui/room/playing-button";
 import { auth } from "@/auth";
 import { Card } from "@/core/deck/Card";
-import { Player } from "@/core/game/Table";
 import { Room } from "@/core/room/Room";
 
 const actions = ["Call", "Check", "Fold", "Bet"];
@@ -57,8 +56,8 @@ export default async function Page() {
   const [room, user] = await getRoomAndUser();
   if (!room) return;
   const [pot, dealer, currentPlayer] = room.getCurrentGame();
-  console.log("cc", currentPlayer);
   let isGameOn = false;
+  console.log(user.hands);
   if (pot) {
     isGameOn = true;
   }
@@ -67,10 +66,10 @@ export default async function Page() {
       <div className="flex flex-row w-screen justify-center content-center">
         {isGameOn && <Cards cards={makeIOCard(dealer!.getBoard())} />}
       </div>
-      {currentPlayer && (
+      {isGameOn && (
         <div>
           <span>Your Hands : </span>
-          <Cards cards={makeIOCard(currentPlayer.getHands())} />
+          <Cards cards={makeIOCard(user?.hands as unknown as Card[])} />
         </div>
       )}
       {room && (

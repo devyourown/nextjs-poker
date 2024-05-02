@@ -1,3 +1,4 @@
+import { User } from "@/app/lib/definitions";
 import { Card } from "@/core/deck/Card";
 import { Dealer } from "@/core/deck/Dealer";
 import { DeterminedDeck } from "@/core/deck/Deck";
@@ -9,7 +10,6 @@ import { Room } from "@/core/room/Room";
 function convertPlayers(datas: any) {
   if (!datas) return null;
   if (!datas.map) datas = JSON.parse(datas);
-  console.log("playersSSS: ", datas);
   return datas.map((data: any) => {
     const {
       id,
@@ -116,8 +116,39 @@ function convertRealGame(data: any) {
   );
 }
 
+function convertUsers(datas: any, cards: any) {
+  return datas.map((data: any) => {
+    const { id, roomId, name, imageSrc, money, hands, ready } = data;
+    return {
+      id: id,
+      roomId: roomId,
+      money: money,
+      imageSrc: imageSrc,
+      name: name,
+      hands: cards[name],
+      ready: ready,
+    };
+  });
+}
+
+function takeOutCards(data: any) {
+  const { players } = data;
+  const result = {} as any;
+  players.forEach((player: any) => {
+    result[player.id] = convertCards(player.hands);
+  });
+  console.log(result);
+  return result;
+}
+
 export function convertRealRoom(data: any) {
   if (!data) return null;
   const { roomId, status, users, numOfReady, game } = data;
-  return Room.of(roomId, status, users, numOfReady, convertRealGame(game));
+  return Room.of(
+    roomId,
+    status,
+    convertUsers(users, takeOutCards(game)),
+    numOfReady,
+    convertRealGame(game)
+  );
 }
