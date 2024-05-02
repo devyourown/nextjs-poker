@@ -1,14 +1,20 @@
 const { createServer } = require("node:http");
 const next = require("next");
+const { Server } = require("socket.io");
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
-const httpServer = createServer(handler);
 
 app.prepare().then(() => {
+  const httpServer = createServer(handler);
+
+  const io = new Server(httpServer);
+  io.on("connection", (socket) => {
+    console.log("connected");
+  });
   httpServer
     .once("error", (err) => {
       console.error(err);
@@ -18,7 +24,3 @@ app.prepare().then(() => {
       console.log(`> Ready on http://${hostname}:${port}`);
     });
 });
-
-module.exports = {
-  httpServer,
-};

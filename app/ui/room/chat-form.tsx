@@ -1,7 +1,7 @@
 "use client";
 
 import Draggable from "react-draggable";
-import { Chat } from "../lib/definitions";
+import { Chat } from "../../lib/definitions";
 
 interface ChattingProps {
   chattings: Chat[];

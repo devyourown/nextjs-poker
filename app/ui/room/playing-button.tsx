@@ -1,20 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { socket } from "../lib/socket";
 
 interface PlayingButtonProps {
-  ready: boolean;
   name: string;
   roomId: string;
 }
 
-export function PlayingButton({ ready, name, roomId }: PlayingButtonProps) {
-  const [isReady, setReady] = useState(ready);
-  function handleReady() {
+export function PlayingButton({ name, roomId }: PlayingButtonProps) {
+  const [isReady, setReady] = useState(false);
+  async function handleReady() {
     setReady(!isReady);
-    console.log(roomId + "btn");
-    socket.emit(roomId + "btn", name + ":" + ready);
+    await fetch("/api/ready", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ roomId: roomId, name: name }),
+    });
   }
   return (
     <button

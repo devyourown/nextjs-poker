@@ -1,17 +1,17 @@
 # Poker Function
 
-- Making UI
-- room ui
-- action ui
+- ~~Making UI~~
+- ~~room ui~~
+- ~~action ui~~
 - ~~login ui~~
 - ~~signup UI, function~~
-- board ui
-- entering room function
+- ~~board ui~~
+- ~~entering room function~~
 - playing in room function
 - ~~login function~~
 - ~~make database~~
-- core poker function
-- core poker function tests
+- ~~core poker function~~
+- ~~core poker function tests~~
 - ~~rank function~~
 - ~~rank tests~~
 - ~~deck function~~

@@ -1,13 +1,13 @@
 import { FormInput } from "@/app/lib/FormInput";
 import { FormOutput } from "@/app/lib/FormOutput";
 import { Card as IOCard, Chat, User } from "@/app/lib/definitions";
-import { findRoom, removeFromCache } from "@/app/lib/room";
-import Action from "@/app/ui/action-form";
+import { findRoom } from "@/app/lib/room";
+import Action from "@/app/ui/room/action-form";
 import { Action as IOAction } from "@/core/game/Game";
-import Cards from "@/app/ui/cards";
-import Chatting from "@/app/ui/chat-form";
-import PlayerSeat from "@/app/ui/player-seat";
-import { PlayingButton } from "@/app/ui/playing-button";
+import Cards from "@/app/ui/room/cards";
+import Chatting from "@/app/ui/room/chat-form";
+import PlayerSeat from "@/app/ui/room/player-seat";
+import { PlayingButton } from "@/app/ui/room/playing-button";
 import { auth } from "@/auth";
 import { Card } from "@/core/deck/Card";
 import { RandomDeck } from "@/core/deck/Deck";
@@ -69,39 +69,12 @@ function makeUserAction(action: string, size: string): UserAction {
 
 export default async function Page() {
   const [room, player] = await getRoomAndPlayer();
-  const input = new FormInput();
-  const output = new FormOutput();
-  const io = new Server();
-  io.on(room.getId(), (value) => {
-    const [id, action, size] = value.split(":");
-
-    if (id !== player.getId()) return;
-    input.setCurrentAction(makeUserAction(action, size));
-  });
-  console.log(room.getId() + "btn");
-  io.on(room.getId() + "btn", (value) => {
-    console.log(value);
-    const [name, ready] = value.split(":");
-    if (name !== player.getId()) return;
-    player.changeReady();
-    if (player.ready()) room.ready();
-    else room.notReady();
-    if (room.isPlaying()) {
-      const players = room.getPlayers();
-      const result = new Game(
-        players,
-        100,
-        200,
-        new RandomDeck(players.length),
-        input,
-        output
-      ).play();
-    }
-  });
+  if (!room) return;
+  const [input, output] = room.getIO() as [FormInput, FormOutput];
   return (
     <div className="relative h-screen bg-green-500">
       <div className="flex flex-row w-screen justify-center content-center">
-        {output.isGameOn() && <Cards cards={makeIOCard(output.getBoard()!)} />}
+        {output && <Cards cards={makeIOCard(output!.getBoard()!)} />}
       </div>
       {player && (
         <div>
@@ -114,20 +87,16 @@ export default async function Page() {
           <PlayerSeat players={room.getUsers()} />
 
           {!room.isPlaying() && (
-            <PlayingButton
-              name={player.getId()}
-              ready={player.ready()}
-              roomId={room.getId()}
-            />
+            <PlayingButton name={player.getId()} roomId={room.getId()} />
           )}
         </div>
       )}
       {player && (
         <Action
           actions={actions}
-          currentBet={input.getCurrentBet()!}
+          currentBet={input ? input.getCurrentBet()! : 0}
           playerMoney={player.getMoney()}
-          isPlayerTurn={input.isPlayerTurn(player)}
+          isPlayerTurn={input ? input.isPlayerTurn(player) : false}
           roomId={room.getId()}
         />
       )}

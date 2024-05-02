@@ -1,10 +1,10 @@
 "use client";
 
 import Draggable from "react-draggable";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { validateUserAction } from "@/error/Validator";
-import { socket } from "../lib/socket";
+import { Action, UserAction } from "@/core/game/Game";
 
 interface ActionFormProps {
   actions: string[];
@@ -14,11 +14,12 @@ interface ActionFormProps {
   roomId: string;
 }
 
-function convertToUserAction(action: any) {
-  if (action.action === "FOLD") return `FOLD:0`;
-  else if (action.action === "CHECK") return `CHECK:0`;
-  else if (action.action === "CALL") return `CALL:0`;
-  return `BET:${action.amount}`;
+function convertToUserAction({ action, amount }: any): UserAction {
+  if (action === "BET") return { action: Action.BET, betSize: amount };
+  if (action === "FOLD") return { action: Action.FOLD, betSize: 0 };
+  if (action === "CALL") return { action: Action.CALL, betSize: 0 };
+  if (action === "CHECK") return { action: Action.CHECK, betSize: 0 };
+  return { action: Action.FOLD, betSize: 0 };
 }
 
 export function createUserAction(
@@ -52,7 +53,16 @@ export default function Actions({
     if (validated.error !== null) {
       setError(validated.error!);
     } else {
-      socket.emit(roomId, convertToUserAction(validated.success));
+      const send = async (action: UserAction) => {
+        await fetch("/api/action", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ roomId: roomId, action: action }),
+        });
+      };
+      send(convertToUserAction(validated.success));
     }
   };
   return (

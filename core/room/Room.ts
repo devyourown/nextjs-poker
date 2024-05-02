@@ -1,7 +1,9 @@
 import { User } from "@/app/lib/definitions";
 import { Player } from "../game/Table";
 import { FormInput } from "@/app/lib/FormInput";
-import { UserAction } from "../game/Game";
+import { Game, UserAction } from "../game/Game";
+import { FormOutput } from "@/app/lib/FormOutput";
+import { GameResult } from "../game/GameResult";
 
 export class Room {
   private roomId: string;
@@ -10,6 +12,8 @@ export class Room {
   private users: User[];
   private numOfReady;
   private input: FormInput | null;
+  private output: FormOutput | null;
+  private gameResult: GameResult | null;
 
   constructor() {
     this.roomId = Math.random().toString(36);
@@ -18,6 +22,8 @@ export class Room {
     this.users = [];
     this.numOfReady = 0;
     this.input = null;
+    this.output = null;
+    this.gameResult = null;
   }
 
   addUser(user: User) {
@@ -46,21 +52,42 @@ export class Room {
     return this.status === "SPACIOUS";
   }
 
-  isPlaying() {
+  isEveryoneReady() {
     return this.status === "PLAYING";
   }
 
-  ready() {
-    this.numOfReady += 1;
-    if (this.numOfReady == this.players.length) this.status = "PLAYING";
-  }
-
-  notReady() {
-    this.numOfReady -= 1;
+  makePlayerReady(playerId: string) {
+    const player = this.getPlayer(playerId);
+    player.changeReady();
+    if (player.ready()) this.numOfReady += 1;
+    else this.numOfReady -= 1;
+    if (this.numOfReady > 1 && this.numOfReady == this.players.length)
+      this.status = "PLAYING";
   }
 
   getId() {
     return this.roomId;
+  }
+
+  setAction(action: UserAction) {
+    this.input?.setCurrentAction(action);
+  }
+
+  setGameResult(gameResult: GameResult) {
+    this.gameResult = gameResult;
+  }
+
+  isPlaying() {
+    return this.input !== null;
+  }
+
+  setIO(input: FormInput, output: FormOutput) {
+    this.input = input;
+    this.output = output;
+  }
+
+  getIO() {
+    return [this.input, this.output];
   }
 }
 

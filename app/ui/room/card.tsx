@@ -1,7 +1,7 @@
 "use client";
 
 import { CSSProperties, useState } from "react";
-import { Card } from "../lib/definitions";
+import { Card } from "../../lib/definitions";
 import style from "./card.module.css";
 import Image from "next/image";
 
