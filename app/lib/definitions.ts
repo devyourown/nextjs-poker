@@ -1,38 +1,61 @@
 export type User = {
-  id: string;
-  roomId?: string;
-  name: string;
-  email: string;
-  imageSrc?: string;
-  money?: number;
-  password?: string;
-  hands?: Card[];
-  ready: boolean;
+    id: string;
+    roomId?: string;
+    name: string;
+    email: string;
+    imageSrc?: string;
+    money?: number;
+    password?: string;
+    hands?: Card[];
+    ready: boolean;
 };
 
 export type Money = {
-  id: string;
-  user_id: string;
-  amount: number;
+    id: string;
+    user_id: string;
+    amount: number;
 };
 
 export type Chat = {
-  author: string;
-  content: string;
+    author: string;
+    content: string;
 };
 
-export type StringSuit = "hearts" | "diamonds" | "clubs" | "spades";
-
 export type Card = {
-  suit: StringSuit;
-  number: number;
+    suit: "hearts" | "diamonds" | "clubs" | "spades";
+    number: number;
 };
 
 export type Room = {
-  roomId: string;
-  roomStatus: "playing" | "fulled" | "spacious";
+    roomId: string;
+    users: User[];
+    isPlaying: boolean;
 };
 
 export type GameResult = {
-  winnersNames: string[];
+    winnersNames: string[];
 };
+
+export type Action = {
+    name: "CALL" | "BET" | "CHECK" | "FOLD";
+    size: number;
+    playerMoney: number;
+};
+
+export enum GameStatus {
+    PREFLOP = 0,
+    FLOP,
+    TURN,
+    LIVER,
+    END,
+}
+
+export type Game = {
+    numOfLeftTurn: number;
+    numOfAllinPlayers: number;
+    numOfFoldPlayers: number;
+    numOfPlayers: number;
+    gameStatus: GameStatus;
+};
+
+export type Player = {};

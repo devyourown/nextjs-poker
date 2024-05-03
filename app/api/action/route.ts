@@ -1,23 +1,18 @@
-import { Action, UserAction } from "@/core/game/Game";
-import { findRoom, saveRoom } from "../../lib/cache-data";
+import { fetchGame } from "../../lib/cache-data";
 import { NextResponse } from "next/server";
-
-function convertToUserAction({ action, amount }: any): UserAction {
-  if (action === "BET") return { action: Action.BET, betSize: amount };
-  if (action === "FOLD") return { action: Action.FOLD, betSize: 0 };
-  if (action === "CALL") return { action: Action.CALL, betSize: 0 };
-  if (action === "CHECK") return { action: Action.CHECK, betSize: 0 };
-  return { action: Action.FOLD, betSize: 0 };
-}
+import { playWith } from "@/newcore/game";
+import { Action } from "@/app/lib/definitions";
 
 export async function POST(req: Request) {
-  const { roomId, action, betSize } = await req.json();
-  const userAction = convertToUserAction({
-    action: action.toUpperCase(),
-    amount: betSize,
-  });
-  const room = await findRoom(roomId);
-  room?.playAction(userAction);
-  saveRoom(room!);
-  return NextResponse.json("good job");
+    const { roomId, action, betSize, playerMoney } = await req.json();
+    const beforeStatus = await fetchGame(roomId);
+    const afterStatus = playWith(
+        { action, betSize, playerMoney } as unknown as Action,
+        beforeStatus
+    );
+    //afterStatus를 보고 게임을 진행함
+    //const room = await findRoom(roomId);
+    //room?.playAction(userAction);
+    //saveRoom(room!);
+    return NextResponse.json("good job");
 }

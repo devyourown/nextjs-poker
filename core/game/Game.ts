@@ -3,7 +3,6 @@ import { Dealer } from "../deck/Dealer";
 import { Deck } from "../deck/Deck";
 import { RankingCalculator } from "../rank/RankCalculator";
 import { GameResult } from "./GameResult";
-import { Input, Output } from "./IO";
 import { Pot } from "./Pot";
 import { Player, PlayerTable } from "./Table";
 
