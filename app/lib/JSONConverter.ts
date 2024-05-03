@@ -3,6 +3,7 @@ import { Card } from "@/core/deck/Card";
 import { Dealer } from "@/core/deck/Dealer";
 import { DeterminedDeck } from "@/core/deck/Deck";
 import { Game } from "@/core/game/Game";
+import { GameResult } from "@/core/game/GameResult";
 import { Pot } from "@/core/game/Pot";
 import { Player } from "@/core/game/Table";
 import { Room } from "@/core/room/Room";
@@ -52,7 +53,8 @@ function convertDealer(data: any) {
     convertPlayers(players),
     convertDeck(deck)!,
     convertCards(board),
-    gameStatus
+    gameStatus,
+    true
   );
 }
 
@@ -82,7 +84,20 @@ function convertPot(data: any, players: Player[]) {
     turnAmount,
     totalAmount,
     foldAmount,
-    hashMap
+    hashMap,
+    true
+  );
+}
+
+function convertGameResult(data: any) {
+  if (!data) return null;
+  const { players, winner } = data;
+  return new GameResult(
+    [],
+    [],
+    undefined,
+    convertPlayers(winner),
+    convertPlayers(players)
   );
 }
 
@@ -111,7 +126,7 @@ function convertRealGame(data: any) {
     convertPlayers(foldPlayers),
     convertPlayers(allInPlayers),
     gameStatus,
-    gameResult,
+    convertGameResult(gameResult)!,
     convertPlayers(playerTable),
     convertPot(pot, player)!,
     convertDealer(dealer),

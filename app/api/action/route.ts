@@ -18,7 +18,6 @@ export async function POST(req: Request) {
   });
   const room = await findRoom(roomId);
   room?.playAction(userAction);
-  console.log(room);
   saveRoom(room!);
   return NextResponse.json("good job");
 }

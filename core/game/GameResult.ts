@@ -5,10 +5,21 @@ export class GameResult {
   private readonly winner: Player[];
   private readonly players: Player[];
 
-  constructor(survivor: Player[], wholePlayer: Player[], pot: Pot) {
+  constructor(
+    survivor: Player[],
+    wholePlayer: Player[],
+    pot?: Pot,
+    winner?: Player[],
+    players?: []
+  ) {
+    if (winner) {
+      this.winner = winner;
+      this.players = players!;
+      return;
+    }
     survivor.sort((a, b) => b.getRanks() - a.getRanks());
     this.winner = this.getWinners(survivor);
-    pot.splitMoney(this.winner, this.getRest(survivor));
+    pot!.splitMoney(this.winner, this.getRest(survivor));
     this.players = wholePlayer;
   }
 

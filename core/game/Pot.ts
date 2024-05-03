@@ -17,16 +17,17 @@ export class Pot {
     turnAmount?: number,
     totalAmount?: number,
     foldAmount?: number,
-    playerBetLog?: Map<Player, number>
+    playerBetLog?: Map<Player, number>,
+    replace?: boolean
   ) {
-    if (currentBet) {
+    if (replace) {
       this.smallBlind = smallBlind;
       this.bigBlind = bigBlind;
       this.turnAmount = turnAmount!;
       this.playerBetLog = playerBetLog!;
       this.totalAmount = totalAmount!;
       this.foldAmount = foldAmount!;
-      this.currentBet = currentBet;
+      this.currentBet = currentBet!;
       return;
     }
     this.smallBlind = smallBlind;
@@ -143,6 +144,7 @@ export class Pot {
     const callAmount = this.getSizeToCall(player);
     player.bet(callAmount);
     this.raiseMoney(callAmount);
+    this.playerBetLog.delete(player);
     this.playerBetLog.set(player, this.currentBet);
   }
 

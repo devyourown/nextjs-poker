@@ -41,7 +41,7 @@ export class Game {
       this.pot = pot!;
       this.dealer = dealer!;
       this.foldPlayers = foldPlayers!;
-      this.allinPlayers = allInPlayers!;
+      this.allinPlayers = allInPlayers ? allInPlayers : [];
       this.gameStatus = gameStatus!;
       this.gameResult = gameResult!;
       this.currentTurnAllin = currentTurnAllin!;
@@ -85,7 +85,8 @@ export class Game {
     ) {
       if (!this.isFoldExceptOne()) this.dealer.showDown();
       let lastPlayers = this.convertTableToList(this.playerTable);
-      lastPlayers = [...lastPlayers, ...this.allinPlayers];
+      if (this.allinPlayers)
+        lastPlayers = [...lastPlayers, ...this.allinPlayers];
       lastPlayers = lastPlayers.filter(
         (player, index, self) =>
           self.findIndex((p) => p.getId() === player.getId()) === index

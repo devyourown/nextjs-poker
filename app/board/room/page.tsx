@@ -8,6 +8,7 @@ import { PlayingButton } from "@/app/ui/room/playing-button";
 import { auth } from "@/auth";
 import { Card } from "@/core/deck/Card";
 import { Room } from "@/core/room/Room";
+import { unstable_noStore as noStore, revalidatePath } from "next/cache";
 
 const actions = ["Call", "Check", "Fold", "Bet"];
 
@@ -53,6 +54,7 @@ function makeIOCard(cards: Card[]) {
 }
 
 export default async function Page() {
+  noStore();
   const [room, user] = await getRoomAndUser();
   if (!room) return;
   const [pot, dealer, currentPlayer] = room.getCurrentGame();
@@ -60,6 +62,7 @@ export default async function Page() {
   if (pot) {
     isGameOn = true;
   }
+  const gameResult = room.getGameResult();
   return (
     <div className="relative h-screen bg-green-500">
       <div className="flex flex-row w-screen justify-center content-center">
@@ -69,6 +72,13 @@ export default async function Page() {
         <div>
           <span>Your Hands : </span>
           <Cards cards={makeIOCard(user?.hands as unknown as Card[])} />
+        </div>
+      )}
+      {gameResult && (
+        <div>
+          {gameResult.getWinnerName().map((name) => {
+            return <div key={name}>the winner is {name}</div>;
+          })}
         </div>
       )}
       {room && (
