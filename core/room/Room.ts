@@ -91,8 +91,8 @@ export class Room {
     this.game = game;
   }
 
-  playAction(action: UserAction) {
-    this.game?.playWith(action);
+  playAction(action: UserAction, isFirstPlayer: boolean) {
+    this.game?.playWith(action, isFirstPlayer);
   }
 
   getGameResult() {

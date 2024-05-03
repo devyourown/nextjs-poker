@@ -3,11 +3,11 @@
  * https://jestjs.io/docs/configuration
  */
 
-import nextJest from 'next/jest.js';
+import nextJest from "next/jest.js";
 
 const createJestConfig = nextJest({
-  dir :'./',
-})
+  dir: "./",
+});
 
 const config = {
   // All imported modules in your tests should be mocked automatically
@@ -191,7 +191,7 @@ const config = {
   // unmockedModulePathPatterns: undefined,
 
   // Indicates whether each individual test should be reported during the run
-  // verbose: undefined,
+  verbose: true,
 
   // An array of regexp patterns that are matched against all source file paths before re-running tests in watch mode
   // watchPathIgnorePatterns: [],

@@ -1,4 +1,4 @@
-import { GameStatus, getNextStatus } from "../game/Game";
+import { GameStatus } from "../game/Game";
 import { Player } from "../game/Table";
 import { Card } from "./Card";
 import { Deck } from "./Deck";
@@ -39,7 +39,7 @@ export class Dealer {
   }
 
   public nextStatus(): void {
-    this.gameStatus = getNextStatus(this.gameStatus);
+    this.gameStatus += 1;
     if (this.gameStatus === GameStatus.FLOP) {
       this.setFlop();
     } else if (this.gameStatus === GameStatus.TURN) {
