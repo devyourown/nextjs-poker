@@ -1,56 +1,18 @@
 "use client";
 
 import Draggable from "react-draggable";
-import { SyntheticEvent, useState } from "react";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
-import { validateUserAction } from "@/error/Validator";
+import { useFormState } from "react-dom";
+import { State, updatePlayerAction } from "@/app/lib/actions";
 
-interface ActionFormProps {
-  actions: string[];
-  currentBet: number;
-  playerMoney: number;
-  isPlayerTurn: boolean;
-  roomId: string;
-}
+export default function Actions() {
+  const [state, dispatch] = useFormState(updatePlayerAction, "");
+  const actions = ["CALL", "CHECK", "FOLD", "BET"];
 
-export default function Actions({
-  actions,
-  currentBet,
-  playerMoney,
-  isPlayerTurn,
-  roomId,
-}: ActionFormProps) {
-  const [error, setError] = useState("");
-  async function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!isPlayerTurn) return;
-    const action = (e.nativeEvent as any).submitter.id;
-    const betSize = ((e.target as HTMLFormElement).elements as any).amount
-      .value;
-    const validated = validateUserAction(currentBet, playerMoney, {
-      action: action.toUpperCase(),
-      betSize: betSize,
-    });
-    if (validated.error !== null) {
-      setError(validated.error!);
-    } else {
-      await fetch("/api/action", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          roomId: roomId,
-          action: action,
-          betSize: betSize,
-        }),
-      });
-    }
-  }
   return (
     <Draggable bounds="body">
       <form
-        onSubmit={(e) => handleSubmit(e)}
+        action={dispatch}
         className="absolute bottom-0 left-0 p-4 bg-white border border-gray-300 rounded-md"
       >
         <label className="block mb-2">Bet Amount:</label>
@@ -73,10 +35,10 @@ export default function Actions({
             </button>
           );
         })}
-        {error && (
+        {state && (
           <>
             <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-            <p className="text-sm text-red-500">{error}</p>
+            <p className="text-sm text-red-500">{state}</p>
           </>
         )}
       </form>

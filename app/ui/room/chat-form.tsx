@@ -3,12 +3,31 @@
 import Draggable from "react-draggable";
 import { Chat } from "../../lib/definitions";
 
-interface ChattingProps {
-  chattings: Chat[];
-}
+const chattings = [
+  { author: "ww", content: "HI buddy" },
+  { author: "zz", content: "quiet" },
+  { author: "wee", content: "oh.." },
+  { author: "ww", content: "HI buddy" },
+  { author: "zz", content: "quiet" },
+  { author: "wee", content: "oh.." },
+  { author: "ww", content: "HI buddy" },
+  { author: "zz", content: "quiet" },
+  { author: "wee", content: "oh.." },
+  { author: "ww", content: "HI buddy" },
+  { author: "zz", content: "quiet" },
+  { author: "wee", content: "oh.." },
+  { author: "ww", content: "HI buddy" },
+  { author: "zz", content: "quiet" },
+  { author: "wee", content: "oh.." },
+  { author: "ww", content: "HI buddy" },
+  { author: "zz", content: "quiet" },
+  { author: "wee", content: "oh.." },
+  { author: "ww", content: "HI buddy" },
+  { author: "zz", content: "quiet" },
+  { author: "wee", content: "oh.." },
+] as Chat[];
 
-export default function Chatting(props: ChattingProps) {
-  const { chattings } = props;
+export default function Chatting() {
   return (
     <Draggable bounds="body" handle=".chattingbar">
       <form

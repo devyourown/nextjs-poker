@@ -32,3 +32,7 @@ export type Room = {
   roomId: string;
   roomStatus: "playing" | "fulled" | "spacious";
 };
+
+export type GameResult = {
+  winnersNames: string[];
+};

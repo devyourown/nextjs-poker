@@ -18,7 +18,8 @@
 - ~~game function~~
 - Making moves of Redis to User, User to Redis light.
 - trigger to re-render room
-- playing in room function
+- ~~playing in room function~~
+- show GameResult and restart Game.
 - Chatting in room function
 - UI Modification.
 - game tests

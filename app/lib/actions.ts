@@ -1,12 +1,14 @@
 "use server";
 
 import bcrypt from "bcrypt";
-import { signIn } from "@/auth";
+import { auth, signIn } from "@/auth";
 import { AuthError } from "next-auth";
 import { z } from "zod";
 import { pool } from "./data";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { validateUserAction } from "@/error/Validator";
+import { fetchCurrentBet, fetchCurrentPlayer } from "./room";
 
 export async function authenticate(
   prevState: string | undefined,
@@ -83,4 +85,38 @@ export async function createAccount(prevState: State, form: FormData) {
   }
 
   redirect("/login");
+}
+
+export async function updatePlayerAction(prevState: any, form: FormData) {
+  const session = await auth();
+  if (!session) return "You don't have a session.";
+  const turnPlayer = await fetchCurrentPlayer(session.user.roomId);
+  if (session.user.name !== turnPlayer) return "Not your turn";
+  const currentBet = await fetchCurrentBet(session.user.roomId);
+  const playerMoney = session.user.money;
+  const action = {
+    action: form.get("action")?.toString().toUpperCase(),
+    betSize: form.get("amount"),
+  };
+  const validateFields = validateUserAction(
+    Number(currentBet),
+    playerMoney,
+    action
+  );
+
+  if (validateFields.error) {
+    return validateFields.error;
+  }
+  await fetch("/api/action", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      roomId: session.user.roomId,
+      action: action,
+      betSize: Number(currentBet),
+    }),
+  });
+  revalidatePath("/board/room");
 }
