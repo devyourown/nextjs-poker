@@ -18,6 +18,7 @@ export class Game {
   private gameStatus: GameStatus;
   private gameResult: GameResult | null;
   private currentTurnAllin: boolean;
+  private isFirstTurnPlayer: boolean;
 
   constructor(
     players: Player[],
@@ -31,7 +32,8 @@ export class Game {
     playerTable?: Player[],
     pot?: Pot,
     dealer?: Dealer,
-    currentTurnAllin?: boolean
+    currentTurnAllin?: boolean,
+    isFirstTurnPlayer?: boolean
   ) {
     if (foldPlayers) {
       this.players = [...players];
@@ -43,6 +45,7 @@ export class Game {
       this.gameStatus = gameStatus!;
       this.gameResult = gameResult!;
       this.currentTurnAllin = currentTurnAllin!;
+      this.isFirstTurnPlayer = isFirstTurnPlayer!;
       return;
     }
     this.players = [...players];
@@ -54,12 +57,15 @@ export class Game {
     this.gameStatus = GameStatus.PRE_FLOP;
     this.gameResult = null;
     this.currentTurnAllin = false;
+    this.isFirstTurnPlayer = true;
   }
 
-  public playWith(userAction: UserAction, isFirstPlayer: boolean): void {
+  public playWith(userAction: UserAction): void {
     if (this.gameResult !== null) return;
-    if (isFirstPlayer) this.leftNumOfResponse = this.playerTable.getSize();
+    if (this.isFirstTurnPlayer)
+      this.leftNumOfResponse = this.playerTable.getSize();
     this.playAction(userAction.action, userAction.betSize);
+    this.isFirstTurnPlayer = false;
     if (
       this.isTurnOver() ||
       this.isAllPlayerAllIn() ||
@@ -69,22 +75,28 @@ export class Game {
       this.pot.refresh(this.foldPlayers);
       this.foldPlayers = [];
       this.gameStatus = this.gameStatus + 1;
-      if (!this.isEnd()) this.currentTurnAllin = false;
+      if (!this.isFoldExceptOne()) this.currentTurnAllin = false;
+      if (this.isFoldExceptOne()) this.gameStatus = GameStatus.END;
+      this.isFirstTurnPlayer = true;
     }
-    if (this.isEnd() || this.gameStatus === GameStatus.END) {
+    if (
+      (this.isEnd() && this.isTurnOver()) ||
+      this.gameStatus === GameStatus.END
+    ) {
       if (!this.isFoldExceptOne()) this.dealer.showDown();
-      console.log("dealer after");
       let lastPlayers = this.convertTableToList(this.playerTable);
       lastPlayers = [...lastPlayers, ...this.allinPlayers];
-      console.log("lastPlayers before filter in GAME PLAYWITH", lastPlayers);
       lastPlayers = lastPlayers.filter(
         (player, index, self) =>
           self.findIndex((p) => p.getId() === player.getId()) === index
       );
-      console.log("lastPlayers in GAME PLAYWITH", lastPlayers);
       this.setPlayersRanking(lastPlayers, this.dealer.getBoard());
       this.gameResult = new GameResult(lastPlayers, this.players, this.pot);
     }
+  }
+
+  public getPlayers() {
+    return this.players;
   }
 
   public getCurrentGame(): [Pot, Dealer, Player] {
@@ -153,6 +165,8 @@ export class Game {
   }
 
   private actBet(betSize: number): void {
+    if (betSize > this.playerTable.getCurrentPlayer().getMoney())
+      betSize = this.playerTable.getCurrentPlayer().getMoney();
     this.pot.bet(this.playerTable.getCurrentPlayer(), betSize);
     this.leftNumOfResponse = this.playerTable.getSize();
   }

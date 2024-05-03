@@ -1,6 +1,6 @@
 import { User } from "@/app/lib/definitions";
 import { Player } from "../game/Table";
-import { Game, UserAction } from "../game/Game";
+import { Action, Game, UserAction } from "../game/Game";
 import { Dealer } from "../deck/Dealer";
 import { Pot } from "../game/Pot";
 
@@ -91,8 +91,20 @@ export class Room {
     this.game = game;
   }
 
-  playAction(action: UserAction, isFirstPlayer: boolean) {
-    this.game?.playWith(action, isFirstPlayer);
+  playAction(action: UserAction) {
+    this.game?.playWith(action);
+    if (action.action === Action.BET) {
+      const players = this.game?.getPlayers();
+      players?.forEach((player) => {
+        this.getUser(player.getId()).money = player.getMoney();
+      });
+    }
+    if (this.game?.getResult()) {
+      const players = this.game.getResult()?.getPlayers();
+      players?.forEach((player) => {
+        this.getUser(player.getId()).money = player.getMoney();
+      });
+    }
   }
 
   getGameResult() {

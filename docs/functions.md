@@ -17,6 +17,7 @@
 - ~~deck tests~~
 - ~~game function~~
 - Making moves of Redis to User, User to Redis light.
+- trigger to re-render room
 - playing in room function
 - Chatting in room function
 - UI Modification.

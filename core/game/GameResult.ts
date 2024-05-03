@@ -33,4 +33,12 @@ export class GameResult {
     }
     return result;
   }
+
+  public getPlayers() {
+    return this.players;
+  }
+
+  public getWinnerName() {
+    return this.winner.map((player) => player.getId());
+  }
 }

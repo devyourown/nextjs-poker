@@ -14,25 +14,24 @@ function convertUsersToPlayers(users: User[]) {
 }
 
 describe("poker game test", () => {
-  const user1: User = {
-    id: "1",
-    name: "kyuho",
-    email: "kyuho@naver.com",
-    money: 10000,
-    ready: false,
-  };
-
-  const user2: User = {
-    id: "2",
-    name: "junseob",
-    email: "junsik@naver.com",
-    money: 100000,
-    ready: false,
-  };
-
   let room: Room;
 
   beforeEach(() => {
+    const user1: User = {
+      id: "1",
+      name: "kyuho",
+      email: "kyuho@naver.com",
+      money: 10000,
+      ready: false,
+    };
+
+    const user2: User = {
+      id: "2",
+      name: "junseob",
+      email: "junsik@naver.com",
+      money: 100000,
+      ready: false,
+    };
     room = new Room();
     room.addUser(user1);
     user1.roomId = room.getId();
@@ -58,8 +57,38 @@ describe("poker game test", () => {
     room.setGame(new Game(players, 100, 200, new RandomDeck(players.length)));
     expect(room.isPlaying()).toBe(true);
     const action: UserAction = { action: Action.FOLD, betSize: 0 };
-    const isFirstPlayer = true;
-    room.playAction(action, isFirstPlayer);
+    room.playAction(action);
     expect(room.getGameResult()).toBeInstanceOf(GameResult);
+  });
+
+  it("should end when everyone allin", () => {
+    const players = convertUsersToPlayers(room.getUsers());
+    room.setGame(new Game(players, 100, 200, new RandomDeck(players.length)));
+    expect(room.isPlaying()).toBe(true);
+    const firstAction: UserAction = { action: Action.BET, betSize: 9900 };
+    const secondAction: UserAction = { action: Action.CALL, betSize: 0 };
+    room.playAction(firstAction);
+    expect(room.getGameResult()).toBeNull();
+    room.playAction(secondAction);
+    expect(room.getGameResult()).toBeInstanceOf(GameResult);
+  });
+
+  it("should have correct money with every player", () => {
+    const players = convertUsersToPlayers(room.getUsers());
+    room.setGame(new Game(players, 100, 200, new RandomDeck(players.length)));
+    expect(room.isPlaying()).toBe(true);
+    const beforeGameUser = {} as any;
+    room.getUsers().forEach((user) => {
+      beforeGameUser[user.name] = user.money;
+    });
+    const firstAction: UserAction = { action: Action.BET, betSize: 9900 };
+    const secondAction: UserAction = { action: Action.CALL, betSize: 0 };
+    room.playAction(firstAction);
+    expect(room.getGameResult()).toBeNull();
+    room.playAction(secondAction);
+    const winnerName = room.getGameResult()?.getWinnerName();
+    winnerName?.forEach((name) => {
+      expect(room.getUser(name).money).toBeGreaterThan(beforeGameUser[name]);
+    });
   });
 });

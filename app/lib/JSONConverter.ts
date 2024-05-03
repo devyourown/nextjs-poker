@@ -99,6 +99,8 @@ function convertRealGame(data: any) {
     gameStatus,
     gameResult,
     pot,
+    currentTurnAllin,
+    isFirstTurnPlayer,
   } = data;
   const player = convertPlayers(players);
   return new Game(
@@ -112,7 +114,9 @@ function convertRealGame(data: any) {
     gameResult,
     convertPlayers(playerTable),
     convertPot(pot, player)!,
-    convertDealer(dealer)
+    convertDealer(dealer),
+    currentTurnAllin,
+    isFirstTurnPlayer
   );
 }
 
