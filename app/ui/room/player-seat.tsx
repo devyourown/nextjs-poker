@@ -4,10 +4,11 @@ import Avatar from "../avatar";
 
 interface PlayerSeatProps {
   users: User[];
+  turnPlayerId: string;
 }
 
 export default function PlayerSeat(props: PlayerSeatProps) {
-  const { users } = props;
+  const { users, turnPlayerId } = props;
   while (users.length < 8) users.push({ name: "", money: -1 } as any);
   return (
     <div className="flex justify-center items-center space-x-8">
@@ -27,7 +28,11 @@ export default function PlayerSeat(props: PlayerSeatProps) {
             <div
               className={clsx(
                 user.ready
-                  ? "w-4 h-4 bg-blue-500 rounded-full ml-10"
+                  ? clsx(
+                      user.name === turnPlayerId
+                        ? "animate-ping w-4 h-4 bg-blue-500 rounded-full ml-10"
+                        : " w-4 h-4 bg-blue-500 rounded-full ml-10"
+                    )
                   : "w-4 h-4 bg-red-500 rounded-full ml-10"
               )}
             ></div>

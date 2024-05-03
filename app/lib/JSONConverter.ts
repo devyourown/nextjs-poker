@@ -68,10 +68,10 @@ function convertPot(data: any, players: Player[]) {
     playerBetLog,
   } = data;
   const hashMap = new Map<Player, number>();
-  if (Object.keys(playerBetLog).length !== 0) {
-    for (const [key, value] of playerBetLog) {
-      const player = players.filter((p) => p.getId() === key)[0];
-      hashMap.set(player, value);
+  if (playerBetLog.length !== 0) {
+    for (const log of playerBetLog) {
+      const player = players.filter((p) => p.getId() === log.id)[0];
+      hashMap.set(player, log.amount);
     }
   }
   return new Pot(
@@ -119,25 +119,26 @@ function convertRealGame(data: any) {
 function convertUsers(datas: any, cards: any) {
   return datas.map((data: any) => {
     const { id, roomId, name, imageSrc, money, hands, ready } = data;
+    const cardsOfUser = cards === null ? null : cards[name];
     return {
       id: id,
       roomId: roomId,
       money: money,
       imageSrc: imageSrc,
       name: name,
-      hands: cards[name],
+      hands: cardsOfUser,
       ready: ready,
     };
   });
 }
 
 function takeOutCards(data: any) {
+  if (!data) return null;
   const { players } = data;
   const result = {} as any;
   players.forEach((player: any) => {
     result[player.id] = convertCards(player.hands);
   });
-  console.log(result);
   return result;
 }
 

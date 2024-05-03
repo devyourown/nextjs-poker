@@ -4,7 +4,6 @@ import Draggable from "react-draggable";
 import { SyntheticEvent, useState } from "react";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { validateUserAction } from "@/error/Validator";
-import { Action, UserAction } from "@/core/game/Game";
 
 interface ActionFormProps {
   actions: string[];
@@ -12,24 +11,6 @@ interface ActionFormProps {
   playerMoney: number;
   isPlayerTurn: boolean;
   roomId: string;
-}
-
-function convertToUserAction({ action, amount }: any): UserAction {
-  if (action === "BET") return { action: Action.BET, betSize: amount };
-  if (action === "FOLD") return { action: Action.FOLD, betSize: 0 };
-  if (action === "CALL") return { action: Action.CALL, betSize: 0 };
-  if (action === "CHECK") return { action: Action.CHECK, betSize: 0 };
-  return { action: Action.FOLD, betSize: 0 };
-}
-
-export function createUserAction(
-  currentBet: number,
-  playerMoney: number,
-  action: any
-) {
-  const validated = validateUserAction(currentBet, playerMoney, action);
-  if (validated.error === null) return convertToUserAction(validated.success);
-  return validated;
 }
 
 export default function Actions({
@@ -40,31 +21,32 @@ export default function Actions({
   roomId,
 }: ActionFormProps) {
   const [error, setError] = useState("");
-  const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
+  async function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!isPlayerTurn) return;
-    const action = (e.nativeEvent as any).submitter.value;
+    const action = (e.nativeEvent as any).submitter.id;
     const betSize = ((e.target as HTMLFormElement).elements as any).amount
       .value;
     const validated = validateUserAction(currentBet, playerMoney, {
-      action: action,
+      action: action.toUpperCase(),
       betSize: betSize,
     });
     if (validated.error !== null) {
       setError(validated.error!);
     } else {
-      const send = async (action: UserAction) => {
-        await fetch("/api/action", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ roomId: roomId, action: action }),
-        });
-      };
-      send(convertToUserAction(validated.success));
+      await fetch("/api/action", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          roomId: roomId,
+          action: action,
+          betSize: betSize,
+        }),
+      });
     }
-  };
+  }
   return (
     <Draggable bounds="body">
       <form

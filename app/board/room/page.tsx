@@ -57,7 +57,6 @@ export default async function Page() {
   if (!room) return;
   const [pot, dealer, currentPlayer] = room.getCurrentGame();
   let isGameOn = false;
-  console.log(user.hands);
   if (pot) {
     isGameOn = true;
   }
@@ -74,7 +73,10 @@ export default async function Page() {
       )}
       {room && (
         <div className="absolute inset-0 flex justify-center items-center mt-40">
-          <PlayerSeat users={room.getUsers()} />
+          <PlayerSeat
+            turnPlayerId={currentPlayer ? currentPlayer?.getId() : ""}
+            users={room.getUsers()}
+          />
 
           {!room.isPlaying() && (
             <PlayingButton name={user.name} roomId={room.getId()} />

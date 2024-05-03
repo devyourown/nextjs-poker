@@ -7,7 +7,6 @@
 - ~~signup UI, function~~
 - ~~board ui~~
 - ~~entering room function~~
-- playing in room function
 - ~~login function~~
 - ~~make database~~
 - ~~core poker function~~
@@ -17,5 +16,9 @@
 - ~~deck function~~
 - ~~deck tests~~
 - ~~game function~~
+- Making moves of Redis to User, User to Redis light.
+- playing in room function
+- Chatting in room function
+- UI Modification.
 - game tests
 - oauth2

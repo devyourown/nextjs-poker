@@ -28,7 +28,7 @@ export async function findRoom(roomId: string) {
 export async function findEmptyRoom() {
   const rooms = await redisClient.hVals("room");
   for (const room of rooms) {
-    if (room.search("SPACIOUS")) {
+    if (room.search("SPACIOUS") !== -1) {
       return convertRealRoom(JSON.parse(room))!;
     }
   }

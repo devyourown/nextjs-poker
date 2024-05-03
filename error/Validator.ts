@@ -23,7 +23,7 @@ function validateAction(currentBet: number, action: string) {
     return { error: "You cannot check now." };
   if (action === "CALL" && currentBet == 0)
     return { error: "You cannot call now." };
-  return {};
+  return null;
 }
 
 function isOneOfAction(action: string) {

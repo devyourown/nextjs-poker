@@ -55,16 +55,16 @@ export default function PlayingCard(props: CardProps) {
         <div className={style.front}>
           <Image
             priority={true}
-            objectFit="contain"
             src={"/card/" + imageSrc}
             alt="card"
             fill
+            style={{ objectFit: "contain" }}
           />
         </div>
         <div className={style.back}>
           <Image
             priority={true}
-            objectFit="contain"
+            style={{ objectFit: "contain" }}
             src="/card/back.png"
             alt="back"
             fill

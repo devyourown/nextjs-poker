@@ -187,8 +187,13 @@ export class Pot {
   }
 
   toJSON() {
+    const newBetLog: any[] = [];
+    this.playerBetLog.forEach((amount, player) => {
+      newBetLog.push({ id: player.getId(), amount: amount });
+    });
+    console.log(newBetLog);
     return {
-      playerBetLog: Object.fromEntries(this.playerBetLog),
+      playerBetLog: newBetLog,
       smallBlind: this.smallBlind,
       bigBlind: this.bigBlind,
       turnAmount: this.turnAmount,
