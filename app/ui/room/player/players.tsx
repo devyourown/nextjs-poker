@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import PlayerSeat from "./player-seat";
 import { PlayingButton } from "./playing-button";
-import { fetchCurrentPlayer, fetchUsers } from "@/app/lib/room";
+import { fetchCurrentPlayer, fetchUsers } from "@/app/lib/cache-data";
 
 export default async function Players() {
   const session = await auth();

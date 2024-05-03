@@ -8,7 +8,7 @@ import { pool } from "./data";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { validateUserAction } from "@/error/Validator";
-import { fetchCurrentBet, fetchCurrentPlayer } from "./room";
+import { fetchCurrentBet, fetchCurrentPlayer } from "./cache-data";
 
 export async function authenticate(
   prevState: string | undefined,

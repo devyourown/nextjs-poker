@@ -1,4 +1,4 @@
-import { fetchGameResult } from "@/app/lib/room";
+import { fetchGameResult } from "@/app/lib/cache-data";
 import { auth } from "@/auth";
 
 export default async function GameResult() {

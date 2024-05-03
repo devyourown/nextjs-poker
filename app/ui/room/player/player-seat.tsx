@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import { User } from "../../lib/definitions";
-import Avatar from "../avatar";
+import { User } from "../../../lib/definitions";
+import Avatar from "../../avatar";
 
 interface PlayerSeatProps {
   users: User[];

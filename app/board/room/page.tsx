@@ -1,7 +1,7 @@
 import Action from "@/app/ui/room/action-form";
-import Board from "@/app/ui/room/board";
+import Board from "@/app/ui/room/cards/board";
 import Chatting from "@/app/ui/room/chat-form";
-import Players from "@/app/ui/room/players";
+import Players from "@/app/ui/room/player/players";
 import GameResult from "@/app/ui/room/result";
 
 export default function Page() {

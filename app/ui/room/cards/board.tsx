@@ -1,4 +1,4 @@
-import { fetchBoardCard, fetchUserCard } from "@/app/lib/room";
+import { fetchBoardCard, fetchUserCard } from "@/app/lib/cache-data";
 import { auth } from "@/auth";
 import Cards from "./cards";
 import { Card } from "@/core/deck/Card";

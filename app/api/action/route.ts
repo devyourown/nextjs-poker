@@ -1,5 +1,5 @@
 import { Action, UserAction } from "@/core/game/Game";
-import { findRoom, saveRoom } from "../../lib/room";
+import { findRoom, saveRoom } from "../../lib/cache-data";
 import { NextResponse } from "next/server";
 
 function convertToUserAction({ action, amount }: any): UserAction {

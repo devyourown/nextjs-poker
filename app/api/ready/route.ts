@@ -1,4 +1,4 @@
-import { findRoom, saveRoom } from "../../lib/room";
+import { findRoom, saveRoom } from "../../lib/cache-data";
 import { Game } from "@/core/game/Game";
 import { RandomDeck } from "@/core/deck/Deck";
 import { NextResponse } from "next/server";
