@@ -5,6 +5,7 @@ import {
     setGame,
     setNumOfLeftTurn,
     setPlayerTable,
+    setUserCard,
     updateUsers,
 } from "../../lib/cache-data";
 import { NextResponse } from "next/server";
@@ -15,7 +16,7 @@ import { makeDeck } from "@/newcore/deck";
 export async function POST(req: Request) {
     const { roomId, name, smallBlind, bigBlind } = await req.json();
     const users: User[] = await fetchUsers(roomId);
-    if (isEveryoneReady(users)) return;
+    if (isEveryoneReady(users)) return NextResponse.json("wrong request.");
     makeUserReady(users, name);
     await updateUsers(roomId, users);
     if (isEveryoneReady(users)) {
@@ -27,10 +28,11 @@ export async function POST(req: Request) {
             numOfPlayers: users.length,
             gameStatus: GameStatus.PREFLOP,
         };
-        users.forEach((user, index) => {
-            if (index === length - 2) user.money! -= smallBlind;
-            if (index === length - 1) user.money! -= bigBlind;
+        users.forEach(async (user, index) => {
+            if (index === users.length - 2) user.money! -= smallBlind;
+            if (index === users.length - 1) user.money! -= bigBlind;
             user.hands = [deck.pop()!, deck.pop()!];
+            await setUserCard(user.name, user.hands);
         });
         const playersName: string[] = users.map((user) => {
             return user.name;

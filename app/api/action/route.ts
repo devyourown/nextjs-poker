@@ -36,7 +36,7 @@ async function dealAction(roomId: string, action: Action, name: string) {
         const betMoney: Map<string, number> = await fetchBetMoney(roomId);
         user.money! -= action.size;
         betMoney.set(name, action.size);
-        await updateUser(roomId, name, user);
+        await updateUser(roomId, user);
         await updateBetMoney(roomId, betMoney);
     } else if (action.name === "FOLD") {
         players.pop();

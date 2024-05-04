@@ -8,7 +8,6 @@ export default async function Players() {
     if (!session) return;
     const playerTable = await fetchPlayerTable(session.user.roomId);
     const users = await fetchUsers(session.user.roomId);
-    console.log(users);
     return (
         <>
             {users && (

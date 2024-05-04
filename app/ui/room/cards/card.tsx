@@ -4,22 +4,14 @@ import { useState } from "react";
 import { Card } from "../../../lib/definitions";
 import style from "./card.module.css";
 import Image from "next/image";
-import { Suit } from "@/core/deck/Card";
 
 interface CardProps {
     card: Card;
 }
 
-function matchSuit(suit: number) {
-    if (suit === Suit.CLUBS) return "clubs";
-    if (suit === Suit.DIAMONDS) return "diamonds";
-    if (suit === Suit.HEARTS) return "hearts";
-    if (suit === Suit.SPADES) return "spades";
-}
-
 function cardToName(card: Card): string {
-    const number = card.number;
-    const suit = matchSuit(Number(card.suit));
+    const { suit, number } = card;
+    console.log(`Card: ${suit} + ${number}`);
     if (number <= 10) return `${number}_of_${suit}.png`;
     if (number == 11) return `jack_of_${suit}.png`;
     if (number == 12) return `queen_of_${suit}.png`;

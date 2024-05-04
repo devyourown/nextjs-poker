@@ -3,7 +3,8 @@ import { auth, signOut, unstable_update } from "@/auth";
 import { PowerIcon } from "@heroicons/react/24/outline";
 import { redirect } from "next/navigation";
 import { User } from "../lib/definitions";
-import { addUser, findEmptyRoom } from "../lib/cache-data";
+import { findEmptyRoom, isExistsRoom, updateUser } from "../lib/cache-data";
+import { revalidatePath } from "next/cache";
 
 export default async function Page() {
     const session = await auth();
@@ -23,10 +24,18 @@ export default async function Page() {
                         <form
                             action={async () => {
                                 "use server";
+                                if (
+                                    user.roomId &&
+                                    (await isExistsRoom(user.roomId))
+                                ) {
+                                    user.ready = true;
+                                    revalidatePath("/board/room");
+                                    redirect("/board/room");
+                                }
                                 user.ready = false;
                                 const id = await findEmptyRoom();
                                 user.roomId = id;
-                                await addUser(id, user);
+                                await updateUser(id, user);
                                 unstable_update({
                                     user: { roomId: id, ...user },
                                 });
