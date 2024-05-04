@@ -1,13 +1,12 @@
 import { Action, Game, GameStatus } from "@/app/lib/definitions";
 
-export function playWith(action: Action, status: Game): Game {
-    let {
-        numOfLeftTurn,
-        numOfAllinPlayers,
-        numOfFoldPlayers,
-        numOfPlayers,
-        gameStatus,
-    } = status;
+export function playWith(
+    action: Action,
+    status: Game,
+    numOfLeftTurn: number
+): Game {
+    let { numOfAllinPlayers, numOfFoldPlayers, numOfPlayers, gameStatus } =
+        status;
     const { name, size, playerMoney } = action;
     if (name === "BET") {
         numOfLeftTurn = numOfPlayers;
@@ -23,7 +22,6 @@ export function playWith(action: Action, status: Game): Game {
     numOfLeftTurn -= 1;
     if (numOfLeftTurn == 0 && gameStatus !== GameStatus.END) gameStatus += 1;
     return {
-        numOfLeftTurn,
         numOfAllinPlayers,
         numOfFoldPlayers,
         numOfPlayers,

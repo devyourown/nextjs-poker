@@ -1,29 +1,46 @@
-import { findRoom, saveRoom } from "../../lib/cache-data";
-import { Game } from "@/core/game/Game";
-import { RandomDeck } from "@/core/deck/Deck";
+import {
+    fetchUsers,
+    setBoardCard,
+    setCurrentBet,
+    setGame,
+    setNumOfLeftTurn,
+    setPlayerTable,
+    updateUsers,
+} from "../../lib/cache-data";
 import { NextResponse } from "next/server";
-import { User } from "@/app/lib/definitions";
-import { Player } from "@/core/game/Table";
-
-function convertUsersToPlayers(users: User[]) {
-  const result = [];
-  for (const user of users) {
-    result.push(new Player(user.name, user.money!));
-  }
-  return result;
-}
+import { Card, Game, GameStatus, User } from "@/app/lib/definitions";
+import { isEveryoneReady, makeUserReady } from "@/newcore/room";
+import { makeDeck } from "@/newcore/deck";
 
 export async function POST(req: Request) {
-  const { roomId, name } = await req.json();
-  const room = await findRoom(roomId);
-  if (!room) return;
-  room?.ready(name);
-  if (room?.isEveryoneReady()) {
-    console.log("your game prepared.");
-    if (room.isPlaying()) return;
-    const players = convertUsersToPlayers(room.getUsers());
-    room.setGame(new Game(players, 1000, 2000, new RandomDeck(players.length)));
-  }
-  saveRoom(room!);
-  return NextResponse.json("good job");
+    const { roomId, name, smallBlind, bigBlind } = await req.json();
+    const users: User[] = await fetchUsers(roomId);
+    if (isEveryoneReady(users)) return;
+    makeUserReady(users, name);
+    await updateUsers(roomId, users);
+    if (isEveryoneReady(users)) {
+        console.log("your game prepared.");
+        const deck: Card[] = makeDeck(users.length);
+        const game: Game = {
+            numOfAllinPlayers: 0,
+            numOfFoldPlayers: 0,
+            numOfPlayers: users.length,
+            gameStatus: GameStatus.PREFLOP,
+        };
+        users.forEach((user, index) => {
+            if (index === length - 2) user.money! -= smallBlind;
+            if (index === length - 1) user.money! -= bigBlind;
+            user.hands = [deck.pop()!, deck.pop()!];
+        });
+        const playersName: string[] = users.map((user) => {
+            return user.name;
+        });
+        await setNumOfLeftTurn(roomId, users.length);
+        await setCurrentBet(roomId, bigBlind);
+        await setGame(roomId, game);
+        await setBoardCard(roomId, deck);
+        await setPlayerTable(roomId, playersName);
+        await updateUsers(roomId, users);
+    }
+    return NextResponse.json("good job");
 }

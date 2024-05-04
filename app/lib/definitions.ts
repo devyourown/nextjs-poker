@@ -3,7 +3,7 @@ export type User = {
     roomId?: string;
     name: string;
     email: string;
-    imageSrc?: string;
+    img_src?: string;
     money?: number;
     password?: string;
     hands?: Card[];
@@ -32,10 +32,6 @@ export type Room = {
     isPlaying: boolean;
 };
 
-export type GameResult = {
-    winnersNames: string[];
-};
-
 export type Action = {
     name: "CALL" | "BET" | "CHECK" | "FOLD";
     size: number;
@@ -51,7 +47,6 @@ export enum GameStatus {
 }
 
 export type Game = {
-    numOfLeftTurn: number;
     numOfAllinPlayers: number;
     numOfFoldPlayers: number;
     numOfPlayers: number;

@@ -9,6 +9,7 @@ import {
     fetchUsers,
     setCurrentBet,
     setGame,
+    setGameResult,
     setNumOfLeftTurn,
     setPlayerTable,
     updateBetMoney,
@@ -30,10 +31,7 @@ async function dealAction(roomId: string, action: Action, name: string) {
     if (action.name === "BET" || action.name === "CALL") {
         if (action.name === "BET") {
             await setCurrentBet(roomId, action.size);
-            await setNumOfLeftTurn(
-                roomId,
-                (await fetchNumOfLeftTurn(roomId)) + 1
-            );
+            await setNumOfLeftTurn(roomId, players.length);
         }
         const betMoney: Map<string, number> = await fetchBetMoney(roomId);
         user.money! -= action.size;
@@ -49,10 +47,11 @@ async function dealAction(roomId: string, action: Action, name: string) {
 export async function POST(req: Request) {
     const { roomId, action, name } = await req.json();
     const beforeStatus = await fetchGame(roomId);
-    const afterStatus = playWith(action, beforeStatus);
+    const playersName: string[] = await fetchPlayerTable(roomId);
+    const numOfLeftTurn: number = await fetchNumOfLeftTurn(roomId);
+    const afterStatus = playWith(action, beforeStatus, numOfLeftTurn);
     dealAction(roomId, action, name);
     if (afterStatus.gameStatus == GameStatus.END) {
-        const playersName: string[] = await fetchPlayerTable(roomId);
         const betMoney: Map<string, number> = await fetchBetMoney(roomId);
         const users: User[] = await fetchUsers(roomId);
         const board = await fetchBoardCard(roomId);
@@ -70,17 +69,17 @@ export async function POST(req: Request) {
         } else {
             const [winners, losers] = makeResult(players, board);
             result = splitMoney(winners, losers, betMoney);
+            await setGameResult(roomId, winners);
         }
         users.forEach(async (user) => {
             user.money! += result.get(user.name)!;
             await updateMoney(user.id, Number(user.money));
         });
         await updateUsers(roomId, users);
+    } else if (numOfLeftTurn <= 0) {
+        await setCurrentBet(roomId, 0);
+        await setNumOfLeftTurn(roomId, playersName.length);
     }
     await setGame(roomId, afterStatus);
-    //afterStatus를 보고 게임을 진행함
-    //const room = await findRoom(roomId);
-    //room?.playAction(userAction);
-    //saveRoom(room!);
     return NextResponse.json("good job");
 }

@@ -2,7 +2,7 @@ import { Room } from "@/core/room/Room";
 import { createClient } from "redis";
 import { convertRealRoom } from "./JSONConverter";
 import { unstable_noStore as noStore } from "next/cache";
-import { Card, Game, GameResult, User } from "./definitions";
+import { Card, Game, User } from "./definitions";
 
 const redisClient = createClient({
     password: process.env.REDIS_PW,
@@ -24,15 +24,16 @@ export async function findRoom(roomId: string) {
 }
 
 export async function findEmptyRoom() {
-    const rooms = await redisClient.hVals("room");
-    for (const room of rooms) {
-        if (room.search("SPACIOUS") !== -1) {
-            return convertRealRoom(JSON.parse(room))!;
-        }
+    const id = await redisClient.sPop("empty_room");
+    console.log(id);
+    if (id === null) {
+        const roomId = Math.random().toString(36);
+        await redisClient.sAdd("empty_room", roomId);
+        return roomId;
     }
-    const room = new Room();
-    await saveRoom(room);
-    return room;
+    const users: User[] = await fetchUsers(id[0]);
+    if (users && users.length !== 8) await redisClient.sAdd("empty_room", id);
+    return id[0];
 }
 
 export async function saveRoom(room: Room) {
@@ -47,13 +48,14 @@ export async function fetchBoardCard(roomId: string) {
     noStore();
     try {
         const data = await redisClient.hGet("board", roomId);
+        if (!data) return null;
         const cards = JSON.parse(data!).map((card: any) => {
             return { number: card.value, suit: card.suit } as Card;
         });
         return cards;
     } catch (error) {
         console.error("Database Error: ", error);
-        throw new Error("Failed to fetch board card.");
+        return null;
     }
 }
 
@@ -69,13 +71,14 @@ export async function fetchUserCard(userId: string) {
     noStore();
     try {
         const data = await redisClient.hGet("user_card", userId);
+        if (!data) return null;
         const cards = JSON.parse(data!).map((card: any) => {
             return { number: card.value, suit: card.suit } as Card;
         });
         return cards;
     } catch (error) {
         console.error("Database Error: ", error);
-        throw new Error("Failed to fetch board card.");
+        return null;
     }
 }
 
@@ -100,7 +103,7 @@ export async function fetchGameResult(roomId: string) {
     }
 }
 
-export async function setGameResult(roomId: string, result: GameResult) {
+export async function setGameResult(roomId: string, result: string[]) {
     try {
         await redisClient.hSet("result", roomId, JSON.stringify(result));
     } catch (error) {
@@ -206,6 +209,21 @@ export async function fetchUsers(roomId: string) {
     } catch (error) {
         console.error("Database Error.");
         return null;
+    }
+}
+
+export async function addUser(roomId: string, user: User) {
+    noStore();
+    try {
+        const users: User[] = await fetchUsers(roomId);
+        if (users) {
+            users.push(user);
+            await redisClient.hSet("users", roomId, JSON.stringify(users));
+        } else {
+            await redisClient.hSet("users", roomId, JSON.stringify([user]));
+        }
+    } catch (error) {
+        console.error("Database Error.");
     }
 }
 

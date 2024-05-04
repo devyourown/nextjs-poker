@@ -6,18 +6,19 @@ import { fetchPlayerTable, fetchUsers } from "@/app/lib/cache-data";
 export default async function Players() {
     const session = await auth();
     if (!session) return;
-    const currentPlayer = (await fetchPlayerTable(session.user.roomId))[0];
+    const playerTable = await fetchPlayerTable(session.user.roomId);
     const users = await fetchUsers(session.user.roomId);
+    console.log(users);
     return (
         <>
             {users && (
                 <div className="absolute inset-0 flex justify-center items-center mt-40">
                     <PlayerSeat
-                        turnPlayerId={currentPlayer ? currentPlayer : ""}
+                        turnPlayerId={playerTable ? playerTable[0] : ""}
                         users={users}
                     />
 
-                    {!currentPlayer && (
+                    {!playerTable && (
                         <PlayingButton
                             name={session?.user.name!}
                             roomId={session?.user.roomId}
