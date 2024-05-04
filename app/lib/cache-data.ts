@@ -110,9 +110,14 @@ export async function setGameResult(roomId: string, result: string[]) {
 
 export async function fetchBetMoney(roomId: string) {
     try {
-        if (0 === (await redisClient.exists("bet_money"))) return null;
+        if (0 === (await redisClient.exists("bet_money")))
+            return new Map<string, number>();
         const data = await redisClient.hGet("bet_money", roomId);
-        return JSON.parse(data!);
+        const result = new Map<string, number>();
+        JSON.parse(data!).map((log: any) => {
+            result.set(log.name, log.money);
+        });
+        return result;
     } catch (error) {
         console.error("Database Error.", error);
         return null;
@@ -124,7 +129,11 @@ export async function updateBetMoney(
     betMoney: Map<string, number>
 ) {
     try {
-        await redisClient.hSet("bet_money", roomId, JSON.stringify(betMoney));
+        const arrForJSON: any[] = [];
+        betMoney.forEach((amount, player) => {
+            arrForJSON.push({ name: player, money: amount });
+        });
+        await redisClient.hSet("bet_money", roomId, JSON.stringify(arrForJSON));
     } catch (error) {
         console.error("Database Error.", error);
         return null;
@@ -179,7 +188,7 @@ export async function fetchUser(roomId: string, userId: string) {
         const users: User[] = await fetchUsers(roomId);
         const user = users.filter((user) => user.name === userId);
         if (!user) return null;
-        return user;
+        return user[0];
     } catch (error) {
         console.error("Database Error.", error);
         return null;
@@ -190,11 +199,17 @@ export async function updateUser(roomId: string, user: User) {
     try {
         const users: User[] = await fetchUsers(roomId);
         if (users) {
-            const others = users.filter((other) => other.name !== user.name);
+            const userId = user.name;
+            console.log("name", user.name);
+            const others = users.filter((other) => {
+                console.log("id : ", userId);
+                console.log("other : ", other.name);
+                return userId !== other.name;
+            });
             others.push(user);
+            console.log("others: ", others);
             await updateUsers(roomId, others);
         } else {
-            console.log([user]);
             await updateUsers(roomId, [user]);
         }
     } catch (error) {
@@ -214,9 +229,9 @@ export async function fetchUsers(roomId: string) {
     }
 }
 
-export async function updateUsers(roomdId: string, users: User[]) {
+export async function updateUsers(roomId: string, users: User[]) {
     try {
-        await redisClient.hSet("users", roomdId, JSON.stringify(users));
+        await redisClient.hSet("users", roomId, JSON.stringify(users));
     } catch (error) {
         console.error("Database Error.", error);
     }

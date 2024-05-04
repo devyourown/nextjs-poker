@@ -29,7 +29,6 @@ export default async function Page() {
                                     (await isExistsRoom(user.roomId))
                                 ) {
                                     user.ready = true;
-                                    revalidatePath("/board/room");
                                     redirect("/board/room");
                                 }
                                 user.ready = false;

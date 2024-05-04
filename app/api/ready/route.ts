@@ -6,6 +6,7 @@ import {
     setNumOfLeftTurn,
     setPlayerTable,
     setUserCard,
+    updateBetMoney,
     updateUsers,
 } from "../../lib/cache-data";
 import { NextResponse } from "next/server";
@@ -28,15 +29,24 @@ export async function POST(req: Request) {
             numOfPlayers: users.length,
             gameStatus: GameStatus.PREFLOP,
         };
+        const firstBet = new Map<string, number>();
         users.forEach(async (user, index) => {
-            if (index === users.length - 2) user.money! -= smallBlind;
-            if (index === users.length - 1) user.money! -= bigBlind;
+            if (index === users.length - 2) {
+                user.money! -= smallBlind;
+                firstBet.set(user.name, smallBlind);
+            }
+            if (index === users.length - 1) {
+                user.money! -= bigBlind;
+                firstBet.set(user.name, bigBlind);
+            }
             user.hands = [deck.pop()!, deck.pop()!];
             await setUserCard(user.name, user.hands);
         });
+        console.log(users);
         const playersName: string[] = users.map((user) => {
             return user.name;
         });
+        await updateBetMoney(roomId, firstBet);
         await setNumOfLeftTurn(roomId, users.length);
         await setCurrentBet(roomId, bigBlind);
         await setGame(roomId, game);

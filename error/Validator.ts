@@ -16,6 +16,7 @@ export function validateUserAction(currentBet: number, action: Action) {
 }
 
 function validateAction(currentBet: number, action: string) {
+    console.log(action);
     if (!isOneOfAction(action))
         return { error: "You can do only existing actions." };
     if (action === "CHECK" && currentBet > 0)

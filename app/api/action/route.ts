@@ -25,7 +25,7 @@ import { updateMoney } from "@/app/lib/data";
 
 async function dealAction(roomId: string, action: Action, name: string) {
     const players: string[] = await fetchPlayerTable(roomId);
-    const user: User = (await fetchUser(roomId, name)) as any;
+    const user: User = (await fetchUser(roomId, name))!;
     const first = players.shift()!;
     players.push(first);
     if (action.name === "BET" || action.name === "CALL") {
@@ -33,9 +33,10 @@ async function dealAction(roomId: string, action: Action, name: string) {
             await setCurrentBet(roomId, action.size);
             await setNumOfLeftTurn(roomId, players.length);
         }
-        const betMoney: Map<string, number> = await fetchBetMoney(roomId);
+        const betMoney: Map<string, number> = (await fetchBetMoney(roomId))!;
         user.money! -= action.size;
         betMoney.set(name, action.size);
+        console.log("deal action : ", user);
         await updateUser(roomId, user);
         await updateBetMoney(roomId, betMoney);
     } else if (action.name === "FOLD") {
@@ -50,9 +51,10 @@ export async function POST(req: Request) {
     const playersName: string[] = await fetchPlayerTable(roomId);
     const numOfLeftTurn: number = await fetchNumOfLeftTurn(roomId);
     const afterStatus = playWith(action, beforeStatus, numOfLeftTurn);
+    console.log("turnLeft: ", numOfLeftTurn);
     dealAction(roomId, action, name);
     if (afterStatus.gameStatus == GameStatus.END) {
-        const betMoney: Map<string, number> = await fetchBetMoney(roomId);
+        const betMoney: Map<string, number> = (await fetchBetMoney(roomId))!;
         const users: User[] = await fetchUsers(roomId);
         const board = await fetchBoardCard(roomId);
         const players: Player[] = [];
@@ -80,6 +82,7 @@ export async function POST(req: Request) {
         await setCurrentBet(roomId, 0);
         await setNumOfLeftTurn(roomId, playersName.length);
     }
+    console.log(afterStatus);
     await setGame(roomId, afterStatus);
     return NextResponse.json("good job");
 }

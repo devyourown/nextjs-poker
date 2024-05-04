@@ -20,7 +20,7 @@ export function playWith(
         if (numOfAllinPlayers === numOfPlayers) gameStatus = GameStatus.END;
     }
     numOfLeftTurn -= 1;
-    if (numOfLeftTurn == 0 && gameStatus !== GameStatus.END) gameStatus += 1;
+    if (numOfLeftTurn <= 0 && gameStatus !== GameStatus.END) gameStatus += 1;
     return {
         numOfAllinPlayers,
         numOfFoldPlayers,

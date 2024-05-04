@@ -11,12 +11,12 @@ interface CardProps {
 
 function cardToName(card: Card): string {
     const { suit, number } = card;
-    console.log(`Card: ${suit} + ${number}`);
+    if (number == 1) return `ace_of_${suit}.png`;
     if (number <= 10) return `${number}_of_${suit}.png`;
     if (number == 11) return `jack_of_${suit}.png`;
     if (number == 12) return `queen_of_${suit}.png`;
     if (number == 13) return `king_of_${suit}.png`;
-    return `ace_of_${suit}.png`;
+    return "";
 }
 
 export default function PlayingCard(props: CardProps) {

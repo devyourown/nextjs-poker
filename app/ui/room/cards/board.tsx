@@ -13,10 +13,8 @@ export default async function Board() {
     const boardCard = await fetchBoardCard(session?.user.roomId!);
     const userCard = await fetchUserCard(session?.user.name!);
     const game: Game = await fetchGame(session?.user.roomId!);
-    const communityCards = getPossibleCommunityCards(
-        boardCard,
-        game.gameStatus
-    );
+    const status = game ? game.gameStatus : GameStatus.PREFLOP;
+    const communityCards = getPossibleCommunityCards(boardCard, status);
 
     return (
         <>

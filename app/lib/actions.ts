@@ -104,7 +104,7 @@ export async function updatePlayerAction(prevState: any, form: FormData) {
     if (validateFields.error) {
         return validateFields.error;
     }
-    await fetch("/api/action", {
+    await fetch("http://localhost:3000/api/action", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
