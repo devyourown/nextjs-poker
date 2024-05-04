@@ -1,6 +1,4 @@
-import { Room } from "@/core/room/Room";
 import { createClient } from "redis";
-import { convertRealRoom } from "./JSONConverter";
 import { unstable_noStore as noStore } from "next/cache";
 import { Card, Game, User } from "./definitions";
 
@@ -18,11 +16,6 @@ redisClient.on("error", (err: any) => console.error(err));
 
 if (!redisClient.isOpen) redisClient.connect();
 
-export async function findRoom(roomId: string) {
-    const room = (await redisClient.hGet("room", roomId)) as string;
-    return convertRealRoom(JSON.parse(room));
-}
-
 export async function isExistsRoom(roomId: string) {
     return await redisClient.sIsMember("empty_room", roomId);
 }
@@ -37,14 +30,6 @@ export async function findEmptyRoom() {
     const users: User[] = await fetchUsers(id as unknown as string);
     if (!users || users.length !== 8) await redisClient.sAdd("empty_room", id);
     return id as unknown as string;
-}
-
-export async function saveRoom(room: Room) {
-    await redisClient.hSet("room", room.getId(), JSON.stringify(room));
-}
-
-export async function removeFromCache(roomId: string) {
-    await redisClient.hDel("room", roomId);
 }
 
 export async function fetchBoardCard(roomId: string) {
@@ -200,14 +185,8 @@ export async function updateUser(roomId: string, user: User) {
         const users: User[] = await fetchUsers(roomId);
         if (users) {
             const userId = user.name;
-            console.log("name", user.name);
-            const others = users.filter((other) => {
-                console.log("id : ", userId);
-                console.log("other : ", other.name);
-                return userId !== other.name;
-            });
+            const others = users.filter((other) => userId !== other.name);
             others.push(user);
-            console.log("others: ", others);
             await updateUsers(roomId, others);
         } else {
             await updateUsers(roomId, [user]);
@@ -259,6 +238,7 @@ export async function setCurrentBet(roomId: string, size: number) {
 export async function fetchGame(roomId: string) {
     noStore();
     try {
+        if (0 === (await redisClient.exists("game"))) return null;
         const data = await redisClient.hGet("game", roomId);
         return data ? JSON.parse(data) : null;
     } catch (error) {

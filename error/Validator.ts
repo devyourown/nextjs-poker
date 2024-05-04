@@ -5,18 +5,13 @@ export function validateUserAction(currentBet: number, action: Action) {
     const inputAction = validateAction(currentBet, name);
     if (inputAction) return inputAction;
     if (name === "BET") {
-        const inputMoney = validateMoney(
-            currentBet,
-            playerMoney,
-            size.toString()
-        );
+        const inputMoney = validateMoney(currentBet, playerMoney, size);
         if (inputMoney) return inputMoney;
     }
     return { success: action, error: null };
 }
 
 function validateAction(currentBet: number, action: string) {
-    console.log(action);
     if (!isOneOfAction(action))
         return { error: "You can do only existing actions." };
     if (action === "CHECK" && currentBet > 0)
@@ -37,8 +32,9 @@ function isOneOfAction(action: string) {
 function validateMoney(
     currentBet: number,
     playerMoney: number,
-    amount: string
+    amount: number
 ) {
+    console.log(amount);
     if (isNaN(Number(amount))) return { error: "You can only input number." };
     const money = Number(amount);
     if (currentBet > money) return { error: "Too Small To Bet." };

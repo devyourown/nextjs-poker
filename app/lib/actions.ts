@@ -93,10 +93,11 @@ export async function updatePlayerAction(prevState: any, form: FormData) {
     const turnPlayer = (await fetchPlayerTable(session.user.roomId))[0];
     if (session.user.name !== turnPlayer) return "Not your turn";
     const currentBet = await fetchCurrentBet(session.user.roomId);
+    console.log("bet in action", currentBet);
     const playerMoney = session.user.money;
     const action: any = {
         name: form.get("action")?.toString().toUpperCase(),
-        betSize: form.get("amount"),
+        size: form.get("amount"),
         playerMoney: playerMoney,
     };
     const validateFields = validateUserAction(Number(currentBet), action);

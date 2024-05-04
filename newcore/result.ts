@@ -1,4 +1,4 @@
-import { Card, Player } from "@/app/lib/definitions";
+import { Card, User } from "@/app/lib/definitions";
 import { Card as PlayCard, Suit } from "@/core/deck/Card";
 import { RankingCalculator } from "@/core/rank/RankCalculator";
 
@@ -19,14 +19,14 @@ function convertCard(cards: Card[]) {
     });
 }
 
-export function makeResult(players: Player[], board: Card[]) {
+export function makeResult(users: User[], board: Card[]) {
     const playerRanks = new Map<string, number>();
     let maxRank = -1;
-    players.forEach((player) => {
-        board.push(...player.hands);
+    users.forEach((user) => {
+        board.push(...user.hands!);
         const rank = RankingCalculator.calculateCards(convertCard(board));
         maxRank = Math.max(rank, maxRank);
-        playerRanks.set(player.name, rank);
+        playerRanks.set(user.name, rank);
     });
     const winners: string[] = [];
     const losers: string[] = [];

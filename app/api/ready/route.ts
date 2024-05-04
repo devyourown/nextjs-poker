@@ -42,7 +42,6 @@ export async function POST(req: Request) {
             user.hands = [deck.pop()!, deck.pop()!];
             await setUserCard(user.name, user.hands);
         });
-        console.log(users);
         const playersName: string[] = users.map((user) => {
             return user.name;
         });

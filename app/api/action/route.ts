@@ -5,7 +5,6 @@ import {
     fetchNumOfLeftTurn,
     fetchPlayerTable,
     fetchUser,
-    fetchUserCard,
     fetchUsers,
     setCurrentBet,
     setGame,
@@ -18,7 +17,7 @@ import {
 } from "../../lib/cache-data";
 import { NextResponse } from "next/server";
 import { playWith } from "@/newcore/game";
-import { Action, Card, GameStatus, Player, User } from "@/app/lib/definitions";
+import { Action, GameStatus, User } from "@/app/lib/definitions";
 import { giveMoneyTo, splitMoney } from "@/newcore/pot";
 import { makeResult } from "@/newcore/result";
 import { updateMoney } from "@/app/lib/data";
@@ -28,12 +27,14 @@ async function dealAction(roomId: string, action: Action, name: string) {
     const user: User = (await fetchUser(roomId, name))!;
     const first = players.shift()!;
     players.push(first);
+    let numOfLeftTurn = await fetchNumOfLeftTurn(roomId);
     if (action.name === "BET" || action.name === "CALL") {
         if (action.name === "BET") {
             await setCurrentBet(roomId, action.size);
-            await setNumOfLeftTurn(roomId, players.length);
+            numOfLeftTurn = players.length;
         }
         const betMoney: Map<string, number> = (await fetchBetMoney(roomId))!;
+        console.log("deal action m : ", user.money);
         user.money! -= action.size;
         betMoney.set(name, action.size);
         console.log("deal action : ", user);
@@ -42,6 +43,8 @@ async function dealAction(roomId: string, action: Action, name: string) {
     } else if (action.name === "FOLD") {
         players.pop();
     }
+    numOfLeftTurn -= 1;
+    await setNumOfLeftTurn(roomId, numOfLeftTurn);
     await setPlayerTable(roomId, players);
 }
 
@@ -51,25 +54,18 @@ export async function POST(req: Request) {
     const playersName: string[] = await fetchPlayerTable(roomId);
     const numOfLeftTurn: number = await fetchNumOfLeftTurn(roomId);
     const afterStatus = playWith(action, beforeStatus, numOfLeftTurn);
-    console.log("turnLeft: ", numOfLeftTurn);
     dealAction(roomId, action, name);
     if (afterStatus.gameStatus == GameStatus.END) {
         const betMoney: Map<string, number> = (await fetchBetMoney(roomId))!;
         const users: User[] = await fetchUsers(roomId);
         const board = await fetchBoardCard(roomId);
-        const players: Player[] = [];
-        playersName.forEach(async (name) => {
-            const hands: Card[] = await fetchUserCard(name);
-            players.push({
-                name: name,
-                hands: hands,
-            });
-        });
         let result: Map<string, number>;
+        console.log("players: in POST", users);
+        console.log("betMoney", betMoney);
         if (afterStatus.numOfFoldPlayers + 1 == afterStatus.numOfPlayers) {
-            result = giveMoneyTo(players[0].name, betMoney);
+            result = giveMoneyTo(playersName[1], betMoney);
         } else {
-            const [winners, losers] = makeResult(players, board);
+            const [winners, losers] = makeResult(users, board);
             result = splitMoney(winners, losers, betMoney);
             await setGameResult(roomId, winners);
         }
@@ -79,6 +75,7 @@ export async function POST(req: Request) {
         });
         await updateUsers(roomId, users);
     } else if (numOfLeftTurn <= 0) {
+        console.log("turn over !!");
         await setCurrentBet(roomId, 0);
         await setNumOfLeftTurn(roomId, playersName.length);
     }
