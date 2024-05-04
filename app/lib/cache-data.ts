@@ -2,7 +2,7 @@ import { Room } from "@/core/room/Room";
 import { createClient } from "redis";
 import { convertRealRoom } from "./JSONConverter";
 import { unstable_noStore as noStore } from "next/cache";
-import { Card, GameResult, User } from "./definitions";
+import { Card, Game, GameResult, User } from "./definitions";
 
 const redisClient = createClient({
     password: process.env.REDIS_PW,
@@ -108,21 +108,90 @@ export async function setGameResult(roomId: string, result: GameResult) {
     }
 }
 
-export async function fetchCurrentPlayer(roomId: string) {
-    noStore();
+export async function fetchBetMoney(roomId: string) {
     try {
-        const data = await redisClient.hGet("current_player", roomId);
+        const data = await redisClient.hGet("bet_money", roomId);
         if (!data) return null;
-        return data;
+        return JSON.parse(data);
     } catch (error) {
         console.error("Database Error.");
         return null;
     }
 }
 
-export async function setCurrentPlayer(roomId: string, playerName: string) {
+export async function updateBetMoney(
+    roomId: string,
+    betMoney: Map<string, number>
+) {
     try {
-        await redisClient.hSet("current_player", roomId, playerName);
+        await redisClient.hSet("bet_money", roomId, JSON.stringify(betMoney));
+    } catch (error) {
+        console.error("Database Error.");
+        return null;
+    }
+}
+
+export async function fetchNumOfLeftTurn(roomId: string) {
+    try {
+        const data = await redisClient.hGet("num_of_left_turn", roomId);
+        if (!data) return null;
+        return JSON.parse(data);
+    } catch (error) {
+        console.error("Database Error.");
+        return null;
+    }
+}
+
+export async function setNumOfLeftTurn(roomId: string, turn: number) {
+    try {
+        await redisClient.hSet("num_of_left_turn", roomId, turn);
+    } catch (error) {
+        console.error("Database Error.");
+    }
+}
+
+export async function fetchPlayerTable(roomId: string) {
+    noStore();
+    try {
+        const data = await redisClient.hGet("player_table", roomId);
+        if (!data) return null;
+        return JSON.parse(data);
+    } catch (error) {
+        console.error("Database Error.");
+        return null;
+    }
+}
+
+export async function setPlayerTable(roomId: string, playerName: string[]) {
+    try {
+        await redisClient.hSet(
+            "player_table",
+            roomId,
+            JSON.stringify(playerName)
+        );
+    } catch (error) {
+        console.error("Database Error.");
+    }
+}
+
+export async function fetchUser(roomId: string, userId: string) {
+    try {
+        const users: User[] = await fetchUsers(roomId);
+        const user = users.filter((user) => user.name === userId);
+        if (!user) return null;
+        return user;
+    } catch (error) {
+        console.error("Database Error.");
+        return null;
+    }
+}
+
+export async function updateUser(roomId: string, userId: string, user: User) {
+    try {
+        const users: User[] = await fetchUsers(roomId);
+        const others = users.filter((user) => user.name !== userId);
+        others.push(user);
+        await redisClient.hSet("users", roomId, JSON.stringify(others));
     } catch (error) {
         console.error("Database Error.");
     }
@@ -133,8 +202,7 @@ export async function fetchUsers(roomId: string) {
     try {
         const data = await redisClient.hGet("users", roomId);
         if (!data) return null;
-        const names = JSON.parse(data);
-        return names;
+        return JSON.parse(data);
     } catch (error) {
         console.error("Database Error.");
         return null;
@@ -176,5 +244,13 @@ export async function fetchGame(roomId: string) {
     } catch (error) {
         console.error("Database Error.");
         return null;
+    }
+}
+
+export async function setGame(roomId: string, game: Game) {
+    try {
+        await redisClient.hSet("game", roomId, JSON.stringify(game));
+    } catch (error) {
+        console.error("Database Error.");
     }
 }

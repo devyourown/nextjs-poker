@@ -58,4 +58,7 @@ export type Game = {
     gameStatus: GameStatus;
 };
 
-export type Player = {};
+export type Player = {
+    name: string;
+    hands: Card[];
+};

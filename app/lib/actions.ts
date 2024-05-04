@@ -8,7 +8,7 @@ import { pool } from "./data";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { validateUserAction } from "@/error/Validator";
-import { fetchCurrentBet, fetchCurrentPlayer } from "./cache-data";
+import { fetchCurrentBet, fetchPlayerTable } from "./cache-data";
 
 export async function authenticate(
     prevState: string | undefined,
@@ -90,19 +90,16 @@ export async function createAccount(prevState: State, form: FormData) {
 export async function updatePlayerAction(prevState: any, form: FormData) {
     const session = await auth();
     if (!session) return "You don't have a session.";
-    const turnPlayer = await fetchCurrentPlayer(session.user.roomId);
+    const turnPlayer = (await fetchPlayerTable(session.user.roomId))[0];
     if (session.user.name !== turnPlayer) return "Not your turn";
     const currentBet = await fetchCurrentBet(session.user.roomId);
     const playerMoney = session.user.money;
-    const action = {
-        action: form.get("action")?.toString().toUpperCase(),
+    const action: any = {
+        name: form.get("action")?.toString().toUpperCase(),
         betSize: form.get("amount"),
+        playerMoney: playerMoney,
     };
-    const validateFields = validateUserAction(
-        Number(currentBet),
-        playerMoney,
-        action
-    );
+    const validateFields = validateUserAction(Number(currentBet), action);
 
     if (validateFields.error) {
         return validateFields.error;
@@ -115,8 +112,7 @@ export async function updatePlayerAction(prevState: any, form: FormData) {
         body: JSON.stringify({
             roomId: session.user.roomId,
             action: action,
-            betSize: Number(currentBet),
-            playerMoney: session.user.money,
+            name: session.user.name,
         }),
     });
     revalidatePath("/board/room");

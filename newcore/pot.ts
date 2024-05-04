@@ -1,3 +1,14 @@
+export function giveMoneyTo(winner: string, betMoney: Map<string, number>) {
+    const result = new Map<string, number>();
+    let allMoney = 0;
+    betMoney.forEach((money, player) => {
+        allMoney += money;
+        result.set(player, 0);
+    });
+    result.set(winner, allMoney);
+    return result;
+}
+
 export function splitMoney(
     winners: string[],
     losers: string[],
