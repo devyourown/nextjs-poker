@@ -1,3 +1,4 @@
+import { deleteUser } from "@/app/lib/cache-data";
 import { Button } from "@/app/ui/button";
 import Action from "@/app/ui/room/action-form";
 import Board from "@/app/ui/room/cards/board";
@@ -19,6 +20,7 @@ export default function Page() {
                         unstable_update({
                             user: { ...user, roomId: undefined },
                         });
+                        deleteUser(user.roomId, user.name!);
                         redirect("/board");
                     }}
                 >

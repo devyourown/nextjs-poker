@@ -1,30 +1,41 @@
 import { Action, Game, GameStatus } from "@/app/lib/definitions";
 
-export function playWith(
-    action: Action,
-    status: Game,
-    numOfLeftTurn: number
-): Game {
-    let { numOfAllinPlayers, numOfFoldPlayers, numOfPlayers, gameStatus } =
-        status;
+export function playWith(action: Action, status: Game): Game {
+    let {
+        numOfAllinPlayers,
+        gameStatus,
+        numOfLeftTurn,
+        currentBet,
+        players,
+        communityCards,
+    } = status;
     const { name, size, playerMoney } = action;
+    const first = players.shift()!;
+    players.push(first);
     if (name === "BET") {
-        numOfLeftTurn = numOfPlayers;
+        numOfLeftTurn = players.length;
+        currentBet = action.size;
         if (size === playerMoney) numOfAllinPlayers += 1;
-        if (numOfAllinPlayers === numOfPlayers) gameStatus = GameStatus.END;
+        if (numOfAllinPlayers === players.length) gameStatus = GameStatus.END;
     } else if (name === "FOLD") {
-        numOfFoldPlayers += 1;
-        if (numOfFoldPlayers + 1 == numOfPlayers) gameStatus = GameStatus.END;
+        players.pop();
+        if (1 === players.length) gameStatus = GameStatus.END;
     } else if (name === "CALL") {
         if (size === playerMoney) numOfAllinPlayers += 1;
-        if (numOfAllinPlayers === numOfPlayers) gameStatus = GameStatus.END;
+        if (numOfAllinPlayers === players.length) gameStatus = GameStatus.END;
     }
     numOfLeftTurn -= 1;
-    if (numOfLeftTurn <= 0 && gameStatus !== GameStatus.END) gameStatus += 1;
+    if (numOfLeftTurn <= 0 && gameStatus !== GameStatus.END) {
+        gameStatus += 1;
+        currentBet = 0;
+        numOfLeftTurn = players.length;
+    }
     return {
         numOfAllinPlayers,
-        numOfFoldPlayers,
-        numOfPlayers,
         gameStatus,
+        numOfLeftTurn,
+        currentBet,
+        players,
+        communityCards,
     };
 }

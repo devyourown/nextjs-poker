@@ -2,10 +2,15 @@ import { Card } from "@/app/lib/definitions";
 
 export function makeDeck(numOfPlayers: number) {
     const neededNumOfCards: number = numOfPlayers * 2 + 5;
-    const cards: Set<Card> = new Set();
+    const cards: Set<string> = new Set();
 
-    while (cards.size !== neededNumOfCards) cards.add(makeRandomCard());
-    return Array.from(cards);
+    while (cards.size !== neededNumOfCards)
+        cards.add(JSON.stringify(makeRandomCard()));
+    const arrCards: Card[] = [];
+    cards.forEach((value) => {
+        arrCards.push(JSON.parse(value));
+    });
+    return arrCards;
 }
 
 function makeSuitString(suit: number) {
@@ -18,5 +23,5 @@ function makeSuitString(suit: number) {
 function makeRandomCard(): Card {
     const number: number = Math.floor(Math.random() * 13) + 1;
     const suit = Math.floor(Math.random() * 4);
-    return { number: number, suit: makeSuitString(suit) };
+    return { number: number !== 1 ? number : 14, suit: makeSuitString(suit) };
 }

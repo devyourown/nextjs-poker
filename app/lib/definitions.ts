@@ -48,9 +48,11 @@ export enum GameStatus {
 
 export type Game = {
     numOfAllinPlayers: number;
-    numOfFoldPlayers: number;
-    numOfPlayers: number;
     gameStatus: GameStatus;
+    numOfLeftTurn: number;
+    currentBet: number;
+    players: string[];
+    communityCards: Card[];
 };
 
 export type Player = {

@@ -32,46 +32,6 @@ export async function findEmptyRoom() {
     return id as unknown as string;
 }
 
-export async function fetchBoardCard(roomId: string) {
-    noStore();
-    try {
-        if (0 === (await redisClient.exists("board"))) return null;
-        const data = await redisClient.hGet("board", roomId);
-        return JSON.parse(data!);
-    } catch (error) {
-        console.error("Database Error: ", error);
-        return null;
-    }
-}
-
-export async function setBoardCard(roomId: string, cards: Card[]) {
-    try {
-        await redisClient.hSet("board", roomId, JSON.stringify(cards));
-    } catch (error) {
-        console.error("Database Error.", error);
-    }
-}
-
-export async function fetchUserCard(userId: string) {
-    noStore();
-    try {
-        if (0 === (await redisClient.exists("user_card"))) return null;
-        const data = await redisClient.hGet("user_card", userId);
-        return JSON.parse(data!);
-    } catch (error) {
-        console.error("Database Error: ", error);
-        return null;
-    }
-}
-
-export async function setUserCard(userId: string, cards: Card[]) {
-    try {
-        await redisClient.hSet("user_card", userId, JSON.stringify(cards));
-    } catch (error) {
-        console.error("Database Error.", error);
-    }
-}
-
 export async function fetchGameResult(roomId: string) {
     noStore();
     try {
@@ -125,52 +85,10 @@ export async function updateBetMoney(
     }
 }
 
-export async function fetchNumOfLeftTurn(roomId: string) {
-    try {
-        if (0 === (await redisClient.exists("num_of_left_turn"))) return null;
-        const data = await redisClient.hGet("num_of_left_turn", roomId);
-        return JSON.parse(data!);
-    } catch (error) {
-        console.error("Database Error.", error);
-        return null;
-    }
-}
-
-export async function setNumOfLeftTurn(roomId: string, turn: number) {
-    try {
-        await redisClient.hSet("num_of_left_turn", roomId, turn);
-    } catch (error) {
-        console.error("Database Error.", error);
-    }
-}
-
-export async function fetchPlayerTable(roomId: string) {
-    noStore();
-    try {
-        if (0 === (await redisClient.exists("player_table"))) return null;
-        const data = await redisClient.hGet("player_table", roomId);
-        return JSON.parse(data!);
-    } catch (error) {
-        console.error("Database Error.", error);
-        return null;
-    }
-}
-
-export async function setPlayerTable(roomId: string, playerName: string[]) {
-    try {
-        await redisClient.hSet(
-            "player_table",
-            roomId,
-            JSON.stringify(playerName)
-        );
-    } catch (error) {
-        console.error("Database Error.", error);
-    }
-}
-
 export async function fetchUser(roomId: string, userId: string) {
     try {
         const users: User[] = await fetchUsers(roomId);
+        if (!users) return null;
         const user = users.filter((user) => user.name === userId);
         if (!user) return null;
         return user[0];
@@ -201,6 +119,7 @@ export async function fetchUsers(roomId: string) {
     try {
         if (0 === (await redisClient.exists("users"))) return null;
         const data = await redisClient.hGet("users", roomId);
+        if (!data) return null;
         return JSON.parse(data!);
     } catch (error) {
         console.error("Database Error.", error);
@@ -216,20 +135,14 @@ export async function updateUsers(roomId: string, users: User[]) {
     }
 }
 
-export async function fetchCurrentBet(roomId: string) {
-    noStore();
+export async function deleteUser(roomId: string, userId: string) {
     try {
-        if (0 === (await redisClient.exists("bet"))) return null;
-        return await redisClient.hGet("bet", roomId);
-    } catch (error) {
-        console.error("Database Error.", error);
-        return null;
-    }
-}
-
-export async function setCurrentBet(roomId: string, size: number) {
-    try {
-        await redisClient.hSet("bet", roomId, size);
+        const users: User[] = await fetchUsers(roomId);
+        if (users) {
+            const others = users.filter((other) => userId !== other.name);
+            if (others.length === 0) await redisClient.hDel("users", roomId);
+            else await updateUsers(roomId, others);
+        }
     } catch (error) {
         console.error("Database Error.", error);
     }

@@ -1,7 +1,7 @@
-import { fetchBoardCard, fetchGame, fetchUserCard } from "@/app/lib/cache-data";
+import { fetchGame, fetchUser } from "@/app/lib/cache-data";
 import { auth } from "@/auth";
 import Cards from "./cards";
-import { Card, Game, GameStatus } from "@/app/lib/definitions";
+import { Card, Game, GameStatus, User } from "@/app/lib/definitions";
 
 function getPossibleCommunityCards(board: Card[], gameStatus: GameStatus) {
     if (gameStatus === GameStatus.PREFLOP) return [];
@@ -10,11 +10,17 @@ function getPossibleCommunityCards(board: Card[], gameStatus: GameStatus) {
 
 export default async function Board() {
     const session = await auth();
-    const boardCard = await fetchBoardCard(session?.user.roomId!);
-    const userCard = await fetchUserCard(session?.user.name!);
     const game: Game = await fetchGame(session?.user.roomId!);
+    const user: User = (await fetchUser(
+        session?.user.roomId!,
+        session?.user.name!
+    ))!;
+    console.log(user.hands);
     const status = game ? game.gameStatus : GameStatus.PREFLOP;
-    const communityCards = getPossibleCommunityCards(boardCard, status);
+    const communityCards = getPossibleCommunityCards(
+        game ? game.communityCards : [],
+        status
+    );
 
     return (
         <>
@@ -23,10 +29,10 @@ export default async function Board() {
                     <Cards cards={communityCards} />
                 </div>
             )}
-            {userCard && (
+            {user?.hands && (
                 <div>
                     <span>Your Hands : </span>
-                    <Cards cards={userCard} />
+                    <Cards cards={user.hands} />
                 </div>
             )}
         </>
