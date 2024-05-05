@@ -25,6 +25,7 @@ export function makeResult(users: User[], board: Card[]) {
     users.forEach((user) => {
         board.push(...user.hands!);
         const rank = RankingCalculator.calculateCards(convertCard(board));
+        console.log(user.name + "  :  " + rank);
         maxRank = Math.max(rank, maxRank);
         playerRanks.set(user.name, rank);
     });

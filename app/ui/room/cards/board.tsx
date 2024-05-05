@@ -15,7 +15,6 @@ export default async function Board() {
         session?.user.roomId!,
         session?.user.name!
     ))!;
-    console.log(user.hands);
     const status = game ? game.gameStatus : GameStatus.PREFLOP;
     const communityCards = getPossibleCommunityCards(
         game ? game.communityCards : [],
@@ -33,6 +32,11 @@ export default async function Board() {
                 <div>
                     <span>Your Hands : </span>
                     <Cards cards={user.hands} />
+                </div>
+            )}
+            {game && (
+                <div>
+                    <span>Bet Size: {game.currentBet}</span>
                 </div>
             )}
         </>

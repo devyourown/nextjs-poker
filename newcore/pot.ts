@@ -1,22 +1,41 @@
-export function giveMoneyTo(winner: string, betMoney: Map<string, number>) {
+import { MoneyLog } from "@/app/lib/definitions";
+
+export function giveMoneyTo(winner: string, betLogs: MoneyLog[]) {
     const result = new Map<string, number>();
     let allMoney = 0;
-    betMoney.forEach((money, player) => {
-        allMoney += money;
-        result.set(player, 0);
+    betLogs.forEach((log) => {
+        allMoney += log.money;
+        result.set(log.playerName, 0);
     });
     result.set(winner, allMoney);
-    return result;
+    return mapToLog(result);
 }
 
 export function splitMoney(
     winners: string[],
     losers: string[],
-    betMoney: Map<string, number>
-): Map<string, number> {
+    betLogs: MoneyLog[]
+): MoneyLog[] {
     const result = new Map<string, number>();
+    const betMoney = logToMap(betLogs);
     payBackToLoser(winners, losers, betMoney, result);
     splitInWinner(winners, betMoney, result);
+    return mapToLog(result);
+}
+
+function mapToLog(maps: Map<string, number>) {
+    const result: MoneyLog[] = [];
+    maps.forEach((money, player) => {
+        result.push({ playerName: player, money: money });
+    });
+    return result;
+}
+
+function logToMap(logs: MoneyLog[]) {
+    const result = new Map<string, number>();
+    logs.forEach((log) => {
+        result.set(log.playerName, log.money);
+    });
     return result;
 }
 

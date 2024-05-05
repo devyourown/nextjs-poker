@@ -7,7 +7,6 @@ import { Game } from "@/app/lib/definitions";
 export default async function Players() {
     const session = await auth();
     if (!session) return;
-    console.log("In Players : ", session.user.roomId);
     const game: Game = await fetchGame(session.user.roomId);
     const users = await fetchUsers(session.user.roomId);
     return (

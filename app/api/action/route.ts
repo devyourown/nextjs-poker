@@ -43,9 +43,9 @@ async function handlePlayersMoney(
 }
 
 async function handleGameEnd(roomId: string, game: Game) {
-    const betMoney: Map<string, number> = (await fetchBetMoney(roomId))!;
+    const betMoney: MoneyLog[] = (await fetchBetMoney(roomId))!;
     const users: User[] = await fetchUsers(roomId);
-    let result: Map<string, number>;
+    let result: MoneyLog[];
     if (1 === game.players.length) {
         result = giveMoneyTo(game.players[0], betMoney);
         await setGameResult(roomId, game.players);
@@ -55,7 +55,9 @@ async function handleGameEnd(roomId: string, game: Game) {
         await setGameResult(roomId, winners);
     }
     users.forEach(async (user) => {
-        user.money! += result.get(user.name)!;
+        user.money! += result.find(
+            (log) => log.playerName === user.name
+        )?.money!;
         await updateMoney(user.id, Number(user.money));
     });
     await updateUsers(roomId, users);
