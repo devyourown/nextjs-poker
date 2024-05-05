@@ -23,6 +23,15 @@ export function PlayingButton({ name, roomId }: PlayingButtonProps) {
                 bigBlind: 2000,
             }),
         });
+        await fetch("/api/socket", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                roomId: roomId,
+            }),
+        });
     }
     return (
         <button

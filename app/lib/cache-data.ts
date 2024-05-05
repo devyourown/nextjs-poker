@@ -1,6 +1,6 @@
 import { createClient } from "redis";
 import { unstable_noStore as noStore } from "next/cache";
-import { Card, Game, MoneyLog, PlayerResult, User } from "./definitions";
+import { Game, MoneyLog, PlayerResult, User } from "./definitions";
 
 const redisClient = createClient({
     password: process.env.REDIS_PW,

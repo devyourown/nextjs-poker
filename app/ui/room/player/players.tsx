@@ -3,8 +3,10 @@ import PlayerSeat from "./player-seat";
 import { PlayingButton } from "./playing-button";
 import { fetchGame, fetchUsers } from "@/app/lib/cache-data";
 import { Game } from "@/app/lib/definitions";
+import { unstable_noStore } from "next/cache";
 
 export default async function Players() {
+    unstable_noStore();
     const session = await auth();
     if (!session) return;
     const game: Game = await fetchGame(session.user.roomId);

@@ -12,7 +12,7 @@ export default async function Page() {
         session && (
             <div className="flex h-full w-full">
                 <div className="flex content-between">
-                    <div className="content-center">
+                    <div className="relative w-24 content-center">
                         <Avatar imgSrc={user.img_src!} />
                     </div>
                     <div className="content-center">

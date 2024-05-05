@@ -2,6 +2,7 @@ import { fetchGame, fetchUser } from "@/app/lib/cache-data";
 import { auth } from "@/auth";
 import Cards from "./cards";
 import { Card, Game, GameStatus, User } from "@/app/lib/definitions";
+import { unstable_noStore } from "next/cache";
 
 function getPossibleCommunityCards(board: Card[], gameStatus: GameStatus) {
     if (gameStatus === GameStatus.PREFLOP) return [];
@@ -9,6 +10,7 @@ function getPossibleCommunityCards(board: Card[], gameStatus: GameStatus) {
 }
 
 export default async function Board() {
+    unstable_noStore();
     const session = await auth();
     const game: Game = await fetchGame(session?.user.roomId!);
     const user: User = (await fetchUser(

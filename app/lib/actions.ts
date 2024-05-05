@@ -116,5 +116,14 @@ export async function updatePlayerAction(prevState: any, form: FormData) {
             name: session.user.name,
         }),
     });
+    await fetch("http://localhost:3000/api/socket", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            roomId: session.user.roomId,
+        }),
+    });
     revalidatePath("/board/room");
 }

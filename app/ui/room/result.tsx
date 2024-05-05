@@ -2,8 +2,10 @@ import { fetchGameResult } from "@/app/lib/cache-data";
 import { auth } from "@/auth";
 import Replay from "./replay";
 import { PlayerResult } from "@/app/lib/definitions";
+import { unstable_noStore } from "next/cache";
 
 export default async function GameResult() {
+    unstable_noStore();
     const session = await auth();
     if (!session) return;
     const playerResult: PlayerResult[] = await fetchGameResult(
