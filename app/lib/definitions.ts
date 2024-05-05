@@ -55,9 +55,9 @@ export type Game = {
     communityCards: Card[];
 };
 
-export type Player = {
+export type PlayerResult = {
     name: string;
-    hands: Card[];
+    rank: string;
 };
 
 export type MoneyLog = {

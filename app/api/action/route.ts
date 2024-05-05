@@ -29,8 +29,8 @@ async function handlePlayersMoney(
     action: Action,
     name: string
 ) {
-    const user: User = (await fetchUser(roomId, name))!;
     if (action.name === "BET" || action.name === "CALL") {
+        const user: User = (await fetchUser(roomId, name))!;
         const logs: MoneyLog[] = (await fetchTurnBet(roomId))!;
         const money = logs.find((log) => log.playerName === name)?.money;
         user.money! -= action.size;
@@ -48,11 +48,11 @@ async function handleGameEnd(roomId: string, game: Game) {
     let result: MoneyLog[];
     if (1 === game.players.length) {
         result = giveMoneyTo(game.players[0], betMoney);
-        await setGameResult(roomId, game.players);
+        await setGameResult(roomId, [{ name: game.players[0], rank: "" }]);
     } else {
-        const [winners, losers] = makeResult(users, game.communityCards);
+        const [winners, losers, ranks] = makeResult(users, game.communityCards);
         result = splitMoney(winners, losers, betMoney);
-        await setGameResult(roomId, winners);
+        await setGameResult(roomId, ranks);
     }
     users.forEach(async (user) => {
         user.money! += result.find(

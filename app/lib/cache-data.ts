@@ -1,6 +1,6 @@
 import { createClient } from "redis";
 import { unstable_noStore as noStore } from "next/cache";
-import { Card, Game, MoneyLog, User } from "./definitions";
+import { Card, Game, MoneyLog, PlayerResult, User } from "./definitions";
 
 const redisClient = createClient({
     password: process.env.REDIS_PW,
@@ -37,15 +37,14 @@ export async function fetchGameResult(roomId: string) {
     try {
         if (0 === (await redisClient.exists("result"))) return null;
         const data = await redisClient.hGet("result", roomId);
-        const names = JSON.parse(data!);
-        return names;
+        return JSON.parse(data!);
     } catch (error) {
         console.error("Database Error.", error);
         return null;
     }
 }
 
-export async function setGameResult(roomId: string, result: string[]) {
+export async function setGameResult(roomId: string, result: PlayerResult[]) {
     try {
         await redisClient.hSet("result", roomId, JSON.stringify(result));
     } catch (error) {

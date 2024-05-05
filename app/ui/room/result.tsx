@@ -1,18 +1,26 @@
 import { fetchGameResult } from "@/app/lib/cache-data";
 import { auth } from "@/auth";
 import Replay from "./replay";
+import { PlayerResult } from "@/app/lib/definitions";
 
 export default async function GameResult() {
     const session = await auth();
     if (!session) return;
-    const names = await fetchGameResult(session?.user.roomId);
+    const playerResult: PlayerResult[] = await fetchGameResult(
+        session?.user.roomId
+    );
     return (
         <>
-            {names && (
+            {playerResult && (
                 <>
                     <div>
-                        {names.map((name: string) => {
-                            return <div key={name}>the winner is {name}</div>;
+                        {playerResult.map(({ name, rank }) => {
+                            return (
+                                <div key={name}>
+                                    the winner is {name}{" "}
+                                    {rank !== "" ? `with ${rank}` : ""}
+                                </div>
+                            );
                         })}
                     </div>
                     <Replay roomId={session.user.roomId} />

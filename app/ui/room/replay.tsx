@@ -32,7 +32,7 @@ export default function Replay({ roomId }: ReplayProps) {
             clearTimeout(timer);
             clearInterval(interval);
         };
-    }, [leftSeconds, roomId]);
+    }, []);
     return (
         <button>
             <svg className="animate-spin h-5 w-5 mr-3"></svg>
