@@ -59,3 +59,8 @@ export type Player = {
     name: string;
     hands: Card[];
 };
+
+export type MoneyLog = {
+    money: number;
+    playerName: string;
+};

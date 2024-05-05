@@ -2,12 +2,11 @@ import {
     deleteGameResult,
     fetchUsers,
     setGame,
-    setGameResult,
     updateBetMoney,
     updateUsers,
 } from "../../lib/cache-data";
 import { NextResponse } from "next/server";
-import { Card, Game, GameStatus, User } from "@/app/lib/definitions";
+import { Card, Game, GameStatus, MoneyLog, User } from "@/app/lib/definitions";
 import { isEveryoneReady, makeUserReady } from "@/newcore/room";
 import { makeDeck } from "@/newcore/deck";
 
@@ -18,15 +17,15 @@ async function makeGame(
     bigBlind: number
 ) {
     const deck: Card[] = makeDeck(users.length);
-    const firstBet = new Map<string, number>();
-    users.forEach(async (user, index) => {
+    const firstBet: MoneyLog[] = [];
+    users.forEach((user, index) => {
         if (index === users.length - 2) {
             user.money! -= smallBlind;
-            firstBet.set(user.name, smallBlind);
+            firstBet.push({ playerName: user.name, money: smallBlind });
         }
         if (index === users.length - 1) {
             user.money! -= bigBlind;
-            firstBet.set(user.name, bigBlind);
+            firstBet.push({ playerName: user.name, money: bigBlind });
         }
         user.hands = [deck.pop()!, deck.pop()!];
     });

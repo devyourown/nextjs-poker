@@ -1,6 +1,6 @@
 import { createClient } from "redis";
 import { unstable_noStore as noStore } from "next/cache";
-import { Card, Game, User } from "./definitions";
+import { Card, Game, MoneyLog, User } from "./definitions";
 
 const redisClient = createClient({
     password: process.env.REDIS_PW,
@@ -61,32 +61,44 @@ export async function deleteGameResult(roomId: string) {
     }
 }
 
+export async function updateTurnBet(roomId: string, moneyLog: MoneyLog) {
+    try {
+        const moneyLogs: MoneyLog[] = await fetchTurnBet(roomId);
+        const filtered = moneyLogs.filter(
+            (log) => log.playerName !== moneyLog.playerName
+        );
+        filtered.push(moneyLog);
+        await redisClient.hSet("turn_bet", roomId, JSON.stringify(filtered));
+    } catch (error) {
+        console.error("TurnBet DB set error.");
+    }
+}
+
+export async function fetchTurnBet(roomId: string) {
+    try {
+        if (0 === (await redisClient.exists(`turn_bet`))) return [];
+        const data = await redisClient.hGet(`turn_bet`, roomId);
+        return JSON.parse(data!);
+    } catch (error) {
+        console.error("TurnBet DB fetch Error.", error);
+        return 0;
+    }
+}
+
 export async function fetchBetMoney(roomId: string) {
     try {
-        if (0 === (await redisClient.exists("bet_money")))
-            return new Map<string, number>();
+        if (0 === (await redisClient.exists("bet_money"))) return [];
         const data = await redisClient.hGet("bet_money", roomId);
-        const result = new Map<string, number>();
-        JSON.parse(data!).map((log: any) => {
-            result.set(log.name, log.money);
-        });
-        return result;
+        return JSON.parse(data!);
     } catch (error) {
         console.error("Database Error.", error);
         return null;
     }
 }
 
-export async function updateBetMoney(
-    roomId: string,
-    betMoney: Map<string, number>
-) {
+export async function updateBetMoney(roomId: string, betMoney: MoneyLog[]) {
     try {
-        const arrForJSON: any[] = [];
-        betMoney.forEach((amount, player) => {
-            arrForJSON.push({ name: player, money: amount });
-        });
-        await redisClient.hSet("bet_money", roomId, JSON.stringify(arrForJSON));
+        await redisClient.hSet("bet_money", roomId, JSON.stringify(betMoney));
     } catch (error) {
         console.error("Database Error.", error);
         return null;

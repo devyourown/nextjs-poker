@@ -1,17 +1,25 @@
 import {
     fetchBetMoney,
     fetchGame,
+    fetchTurnBet,
     fetchUser,
     fetchUsers,
     setGame,
     setGameResult,
     updateBetMoney,
+    updateTurnBet,
     updateUser,
     updateUsers,
 } from "../../lib/cache-data";
 import { NextResponse } from "next/server";
 import { playWith } from "@/newcore/game";
-import { Action, Game, GameStatus, User } from "@/app/lib/definitions";
+import {
+    Action,
+    Game,
+    GameStatus,
+    MoneyLog,
+    User,
+} from "@/app/lib/definitions";
 import { giveMoneyTo, splitMoney } from "@/newcore/pot";
 import { makeResult } from "@/newcore/result";
 import { updateMoney } from "@/app/lib/data";
@@ -23,11 +31,14 @@ async function handlePlayersMoney(
 ) {
     const user: User = (await fetchUser(roomId, name))!;
     if (action.name === "BET" || action.name === "CALL") {
-        const betMoney: Map<string, number> = (await fetchBetMoney(roomId))!;
+        const logs: MoneyLog[] = (await fetchTurnBet(roomId))!;
+        const money = logs.find((log) => log.playerName === name)?.money;
         user.money! -= action.size;
-        betMoney.set(name, action.size);
         await updateUser(roomId, user);
-        await updateBetMoney(roomId, betMoney);
+        await updateTurnBet(roomId, {
+            playerName: name,
+            money: money! + action.size,
+        });
     }
 }
 
@@ -35,8 +46,6 @@ async function handleGameEnd(roomId: string, game: Game) {
     const betMoney: Map<string, number> = (await fetchBetMoney(roomId))!;
     const users: User[] = await fetchUsers(roomId);
     let result: Map<string, number>;
-    console.log("players: in POST", users);
-    console.log("betMoney", betMoney);
     if (1 === game.players.length) {
         result = giveMoneyTo(game.players[0], betMoney);
         await setGameResult(roomId, game.players);
@@ -52,15 +61,31 @@ async function handleGameEnd(roomId: string, game: Game) {
     await updateUsers(roomId, users);
 }
 
+async function updateBet(roomId: string) {
+    const betMoney: MoneyLog[] = (await fetchBetMoney(roomId))!;
+    const turnBet: MoneyLog[] = (await fetchTurnBet(roomId))!;
+    const newLog: MoneyLog[] = [];
+    turnBet.forEach((log) => {
+        const alreadyBet = betMoney.find(
+            (bet) => bet.playerName === log.playerName
+        )?.money;
+        newLog.push({
+            playerName: log.playerName,
+            money: log.money + alreadyBet!,
+        });
+    });
+    await updateBetMoney(roomId, newLog);
+}
+
 export async function POST(req: Request) {
     const { roomId, action, name } = await req.json();
-    const beforeStatus = await fetchGame(roomId);
+    const beforeStatus: Game = await fetchGame(roomId);
     const afterStatus = playWith(action, beforeStatus);
-    handlePlayersMoney(roomId, action, name);
-    console.log(afterStatus);
+    await handlePlayersMoney(roomId, action, name);
+    if (beforeStatus.gameStatus !== afterStatus.gameStatus) updateBet(roomId);
     await setGame(roomId, afterStatus);
     if (afterStatus.gameStatus === GameStatus.END) {
-        handleGameEnd(roomId, afterStatus);
+        await handleGameEnd(roomId, afterStatus);
     }
     return NextResponse.json("good job");
 }
