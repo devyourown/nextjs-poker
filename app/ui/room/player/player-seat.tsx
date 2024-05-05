@@ -11,7 +11,7 @@ export default function PlayerSeat(props: PlayerSeatProps) {
     const { users, turnPlayerId } = props;
     while (users.length < 8) users.push({ name: "", money: -1 } as any);
     return (
-        <div className="flex justify-center items-center space-x-8">
+        <div className="flex justify-center items-center space-x-14">
             {users.map((user: User, index) => {
                 if (user.name === "")
                     return (
@@ -23,8 +23,9 @@ export default function PlayerSeat(props: PlayerSeatProps) {
                 return (
                     <div
                         key={user.name}
-                        className="bg-gray-300 w-24 h-24 flex-col justify-items-center items-center rounded-full"
+                        className="flex-col w-30 h-30 items-center justify-items-cente"
                     >
+                        <span className="text-black">{user.name}</span>
                         <div
                             className={clsx(
                                 user.ready
@@ -36,10 +37,7 @@ export default function PlayerSeat(props: PlayerSeatProps) {
                                     : "w-4 h-4 bg-red-500 rounded-full ml-10"
                             )}
                         ></div>
-                        <span className="absolute text-black ml-5 mt-4">
-                            {user.name}
-                        </span>
-                        <div className="ml-7 mt-8">
+                        <div className="relative bg-gray-300 w-24 h-24 rounded-full overflow-hidden">
                             <Avatar imgSrc={user.img_src!} />
                         </div>
                         <div className="text-black mt-2">money:</div>

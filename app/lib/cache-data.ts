@@ -53,6 +53,14 @@ export async function setGameResult(roomId: string, result: string[]) {
     }
 }
 
+export async function deleteGameResult(roomId: string) {
+    try {
+        await redisClient.hDel("result", roomId);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 export async function fetchBetMoney(roomId: string) {
     try {
         if (0 === (await redisClient.exists("bet_money")))

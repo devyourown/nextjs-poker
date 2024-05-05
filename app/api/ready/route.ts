@@ -1,6 +1,8 @@
 import {
+    deleteGameResult,
     fetchUsers,
     setGame,
+    setGameResult,
     updateBetMoney,
     updateUsers,
 } from "../../lib/cache-data";
@@ -45,7 +47,13 @@ async function makeGame(
 }
 
 export async function POST(req: Request) {
-    const { roomId, name, smallBlind, bigBlind } = await req.json();
+    const { roomId, name, smallBlind, bigBlind, replay } = await req.json();
+    if (replay) {
+        const users = await fetchUsers(roomId);
+        await makeGame(roomId, users, smallBlind, bigBlind);
+        await deleteGameResult(roomId);
+        return NextResponse.json("replay");
+    }
     const users: User[] = await fetchUsers(roomId);
     if (isEveryoneReady(users)) return NextResponse.json("wrong request.");
     makeUserReady(users, name);

@@ -39,6 +39,7 @@ async function handleGameEnd(roomId: string, game: Game) {
     console.log("betMoney", betMoney);
     if (1 === game.players.length) {
         result = giveMoneyTo(game.players[0], betMoney);
+        await setGameResult(roomId, game.players);
     } else {
         const [winners, losers] = makeResult(users, game.communityCards);
         result = splitMoney(winners, losers, betMoney);
