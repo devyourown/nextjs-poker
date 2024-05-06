@@ -2,8 +2,8 @@ import Avatar from "../ui/avatar";
 import { auth, signOut, unstable_update } from "@/auth";
 import { PowerIcon } from "@heroicons/react/24/outline";
 import { redirect } from "next/navigation";
-import { User } from "../lib/definitions";
-import { findEmptyRoom, updateUser } from "../lib/cache-data";
+import { Room, User } from "../lib/definitions";
+import { fetchRoom, findEmptyRoom, setRoom } from "../lib/cache-data";
 
 export default async function Page() {
     const session = await auth();
@@ -26,7 +26,9 @@ export default async function Page() {
                                 user.ready = false;
                                 const id = await findEmptyRoom();
                                 user.roomId = id;
-                                await updateUser(id, user);
+                                const room: Room = await fetchRoom(user.roomId);
+                                room.users.push(user);
+                                await setRoom(user.roomId, room);
                                 await unstable_update({
                                     user: { roomId: id, ...user },
                                 });

@@ -30,6 +30,14 @@ export type Room = {
     roomId: string;
     users: User[];
     isPlaying: boolean;
+    turnBetMoney: MoneyLog[];
+    totalBetMoney: MoneyLog[];
+    gameResult: PlayerResult[] | null;
+    game: Game;
+};
+
+export type PlayerOrder = {
+    users: User[];
 };
 
 export type Action = {
