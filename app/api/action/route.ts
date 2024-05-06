@@ -44,6 +44,12 @@ function updateBetLogs(turnLogs: MoneyLog[], totalLogs: MoneyLog[]) {
 //this function has side effect
 async function setGameEnd(room: Room) {
     const totalLogs: MoneyLog[] = room.totalBetMoney;
+    const turnLogs: MoneyLog[] = room.turnBetMoney;
+    totalLogs.forEach((log) => {
+        log.money += turnLogs.find(
+            (tl) => tl.playerName === log.playerName
+        )?.money!;
+    });
     const users: User[] = room.users;
     const game = room.game!;
     let result: MoneyLog[];

@@ -10,8 +10,12 @@ export default function GameResult({ roomId }: { roomId: string }) {
     const [playerResult, setPlayerResult] = useState<null | PlayerResult[]>(
         null
     );
-    socket.on(`room_${roomId}`, () => {
-        setChange(!change);
+    socket.on(`room_${roomId}`, (data) => {
+        if (data === "clean") {
+            setPlayerResult(null);
+        } else {
+            setChange(!change);
+        }
     });
     useEffect(() => {
         const fetchData = async (roomId: string) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import Cards from "./cards";
-import { Card, GameStatus, User } from "@/app/lib/definitions";
+import { Card, Game, GameStatus, User } from "@/app/lib/definitions";
 import { socket } from "@/app/lib/socket";
 import { useEffect, useState } from "react";
 
@@ -23,7 +23,7 @@ export default function Board({ roomId, name }: BoardProps) {
         if (data === "clean") {
             setHands([]);
             setCommunityCards([]);
-            setChange(false);
+            setChange(!change);
         }
         if (data === "card") setChange(!change);
     });
@@ -33,16 +33,21 @@ export default function Board({ roomId, name }: BoardProps) {
                 method: "POST",
                 body: JSON.stringify({ roomId: roomId }),
             });
-            const { game, users } = await data.json();
+            const { game, users }: { game: Game; users: User[] } =
+                await data.json();
             if (game) {
-                const user = users.find((u: User) => u.name === name);
+                const user = users.find((u: User) => u.name === name)!;
                 if (user.hands) setHands(user.hands);
-                setCommunityCards(
-                    getPossibleCommunityCards(
-                        game.communityCards,
-                        game.gameStatus
-                    )
-                );
+                if (game.players.length === 0) {
+                    setCommunityCards([]);
+                } else {
+                    setCommunityCards(
+                        getPossibleCommunityCards(
+                            game.communityCards,
+                            game.gameStatus
+                        )
+                    );
+                }
             }
         };
         fetchData(roomId);

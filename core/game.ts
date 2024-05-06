@@ -23,6 +23,8 @@ export function playWith(action: Action, status: Game): Game {
         if (1 === players.length) gameStatus = GameStatus.END;
     } else if (name === "CALL") {
         if (size === playerMoney) numOfAllinPlayers += 1;
+        else if (numOfAllinPlayers + 1 === players.length)
+            gameStatus = GameStatus.END;
         if (numOfAllinPlayers === players.length) gameStatus = GameStatus.END;
     }
     numOfLeftTurn -= 1;

@@ -7,7 +7,7 @@ interface ReplayProps {
 }
 
 export default function Replay({ roomId }: ReplayProps) {
-    const [leftSeconds, setLeftSeconds] = useState(3);
+    const [leftSeconds, setLeftSeconds] = useState(5);
     useEffect(() => {
         async function handleReplay() {
             await fetch("/api/ready", {
@@ -23,7 +23,7 @@ export default function Replay({ roomId }: ReplayProps) {
                 }),
             });
         }
-        const timer = setTimeout(handleReplay, 5000);
+        const timer = setTimeout(handleReplay, leftSeconds * 1000);
         const interval = setInterval(
             () => setLeftSeconds(leftSeconds - 1),
             1000
@@ -32,7 +32,7 @@ export default function Replay({ roomId }: ReplayProps) {
             clearTimeout(timer);
             clearInterval(interval);
         };
-    }, []);
+    }, [leftSeconds]);
     return (
         <button>
             <svg className="animate-spin h-5 w-5 mr-3"></svg>
