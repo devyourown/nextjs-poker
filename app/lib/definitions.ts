@@ -60,6 +60,7 @@ export type Game = {
     currentBet: number;
     players: string[];
     communityCards: Card[];
+    potSize: number;
 };
 
 export type PlayerResult = {

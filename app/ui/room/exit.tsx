@@ -22,7 +22,8 @@ export default function Exit() {
                     );
                     room.users = filtered;
                     await setRoom(user.roomId, room);
-                    socket.emit("room_change", user.roomId);
+                    if (room.users.length !== 0)
+                        socket.emit("room_change", user.roomId);
                     redirect("/board");
                 }}
             >

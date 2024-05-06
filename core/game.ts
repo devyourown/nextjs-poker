@@ -8,6 +8,7 @@ export function playWith(action: Action, status: Game): Game {
         currentBet,
         players,
         communityCards,
+        potSize,
     } = status;
     const { name, size, playerMoney } = action;
     const first = players.shift()!;
@@ -37,5 +38,6 @@ export function playWith(action: Action, status: Game): Game {
         currentBet,
         players,
         communityCards,
+        potSize,
     };
 }

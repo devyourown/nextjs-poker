@@ -1,8 +1,12 @@
 import { Action } from "@/app/lib/definitions";
 
-export function validateUserAction(currentBet: number, action: Action) {
+export function validateUserAction(
+    currentBet: number,
+    action: Action,
+    betLog: number
+) {
     const { name, playerMoney, size } = action;
-    const inputAction = validateAction(currentBet, name);
+    const inputAction = validateAction(currentBet, name, betLog);
     if (inputAction) return inputAction;
     if (name === "BET") {
         const inputMoney = validateMoney(currentBet, playerMoney, size);
@@ -11,10 +15,10 @@ export function validateUserAction(currentBet: number, action: Action) {
     return { success: action, error: null };
 }
 
-function validateAction(currentBet: number, action: string) {
+function validateAction(currentBet: number, action: string, betLog: number) {
     if (!isOneOfAction(action))
         return { error: "You can do only existing actions." };
-    if (action === "CHECK" && currentBet > 0)
+    if (action === "CHECK" && currentBet > 0 && betLog !== currentBet)
         return { error: "You cannot check now." };
     if (action === "CALL" && currentBet == 0)
         return { error: "You cannot call now." };

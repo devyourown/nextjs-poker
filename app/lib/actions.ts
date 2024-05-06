@@ -95,6 +95,9 @@ export async function updatePlayerAction(prevState: any, form: FormData) {
     const game: Game = room.game!;
     if (game === null) return "Game is not playing.";
     if (session.user.name !== game.players[0]) return "Not your turn";
+    const playerLog = room.turnBetMoney.find(
+        (log) => log.playerName === game.players[0]
+    );
     const playerMoney = session.user.money;
     const action: Action = {
         name: form.get("action") as any,
@@ -102,7 +105,12 @@ export async function updatePlayerAction(prevState: any, form: FormData) {
         playerMoney: playerMoney,
     };
     if (action.name === "CALL") action.size = game.currentBet;
-    const validateFields = validateUserAction(Number(game.currentBet), action);
+    if (action.name === "CHECK" || action.name === "FOLD") action.size = 0;
+    const validateFields = validateUserAction(
+        Number(game.currentBet),
+        action,
+        playerLog?.money!
+    );
 
     if (validateFields.error) {
         return validateFields.error;

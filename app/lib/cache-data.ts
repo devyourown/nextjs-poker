@@ -39,6 +39,9 @@ export async function findEmptyRoom() {
     }
     const id = await redisClient.sPop("empty_room");
     const room = await fetchRoom(id as unknown as string);
+    if (room === null) {
+        return await findEmptyRoom();
+    }
     if (!room.users || room.users.length !== 8)
         await redisClient.sAdd("empty_room", id);
     return id as unknown as string;

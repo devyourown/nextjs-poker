@@ -18,7 +18,6 @@ function getPossibleCommunityCards(board: Card[], gameStatus: GameStatus) {
 export default function Board({ roomId, name }: BoardProps) {
     const [hands, setHands] = useState<[] | Card[]>([]);
     const [communityCards, setCommunityCards] = useState<[] | Card[]>([]);
-    const [currentBet, SetCurrentBet] = useState<null | number>(null);
     const [change, setChange] = useState(false);
     socket.on(`room_${roomId}`, (data) => {
         if (data === "card") setChange(!change);
@@ -39,7 +38,6 @@ export default function Board({ roomId, name }: BoardProps) {
                         game.gameStatus
                     )
                 );
-                SetCurrentBet(game.currentBet);
             }
         };
         fetchData(roomId);
@@ -56,11 +54,6 @@ export default function Board({ roomId, name }: BoardProps) {
                 <div>
                     <span>Your Hands : </span>
                     <Cards cards={hands} />
-                </div>
-            )}
-            {currentBet && (
-                <div>
-                    <span>Bet Size: {currentBet}</span>
                 </div>
             )}
         </>

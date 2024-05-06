@@ -14,6 +14,8 @@ interface PlayersProps {
 export default function Players({ name, roomId }: PlayersProps) {
     const [sortedUsers, setSortedUsers] = useState<[] | User[]>([]);
     const [firstPlayer, setFirstPlayer] = useState<null | string>();
+    const [currentBet, SetCurrentBet] = useState<null | number>(null);
+    const [potSize, setPotSize] = useState<null | number>(null);
     const [change, setChange] = useState(false);
     socket.on(`room_${roomId}`, () => {
         setChange(!change);
@@ -25,15 +27,31 @@ export default function Players({ name, roomId }: PlayersProps) {
                 body: JSON.stringify({ roomId: roomId }),
             });
             if (data === null) return;
-            const { game, users } = await data.json();
+            const { game, users }: { game: Game; users: User[] } =
+                await data.json();
             users.sort((a: User, b: User) => a.name.length - b.name.length);
             setSortedUsers(users);
-            if (game) setFirstPlayer(game.players[0]);
+            if (game) {
+                setFirstPlayer(game.players[0]);
+                SetCurrentBet(game.currentBet);
+                console.log(game.potSize);
+                setPotSize(game.potSize);
+            }
         };
         fetchData(roomId);
     }, [change]);
     return (
         <>
+            {currentBet !== null && (
+                <div>
+                    <div>
+                        <span>Bet Size: {currentBet}</span>
+                    </div>
+                    <div>
+                        <span>Pot Size: {potSize}</span>
+                    </div>
+                </div>
+            )}
             {sortedUsers && (
                 <div className="absolute inset-0 flex justify-center items-center mt-40">
                     <PlayerSeat

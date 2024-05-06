@@ -34,6 +34,7 @@ function makeGame(room: Room, smallBlind: number, bigBlind: number) {
         currentBet: bigBlind,
         players: playersName,
         communityCards: deck,
+        potSize: smallBlind + bigBlind,
     };
     room.game = game;
     room.turnBetMoney = firstBet;

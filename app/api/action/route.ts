@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { playWith } from "@/core/game";
 import {
     Action,
+    Game,
     GameStatus,
     MoneyLog,
     Room,
@@ -14,11 +15,17 @@ import { updateMoney } from "@/app/lib/data";
 import { socket } from "@/app/lib/socket";
 
 //this function has side effect.
-function handleMoneyWithAction(action: Action, user: User, logs: MoneyLog[]) {
+function handleMoneyWithAction(
+    action: Action,
+    user: User,
+    logs: MoneyLog[],
+    game: Game
+) {
     if (action.name === "BET" || action.name === "CALL") {
         const userLog = logs.find((log) => log.playerName === user.name)!;
         user.money! -= action.size;
         userLog.money += action.size;
+        game.potSize += action.size;
     }
 }
 
@@ -61,8 +68,10 @@ export async function POST(req: Request) {
     const beforeStatus = room.game?.gameStatus;
     const gameAfterAction = playWith(action, room.game!);
     room.game = gameAfterAction;
+    console.log(action.size);
+    console.log(room.game.potSize);
     const user = room.users.find((u) => u.name === name)!;
-    handleMoneyWithAction(action, user, room.turnBetMoney);
+    handleMoneyWithAction(action, user, room.turnBetMoney, room.game);
     let emitMessage = "";
     if (gameAfterAction.gameStatus !== beforeStatus) {
         updateBetLogs(room.turnBetMoney, room.totalBetMoney);
