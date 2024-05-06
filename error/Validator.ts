@@ -34,7 +34,6 @@ function validateMoney(
     playerMoney: number,
     amount: number
 ) {
-    console.log(amount);
     if (isNaN(Number(amount))) return { error: "You can only input number." };
     const money = Number(amount);
     if (currentBet > money) return { error: "Too Small To Bet." };

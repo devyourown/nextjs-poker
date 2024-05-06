@@ -12,7 +12,7 @@ export default async function Page() {
     unstable_noStore();
     const session = await auth();
     socket.on(`room_${session?.user.roomId}`, (data) => {
-        console.log(session?.user.roomId + "roomd: ", data);
+        //should re-render page
     });
     return (
         <div className="relative h-screen bg-green-500">

@@ -37,7 +37,6 @@ interface ChattingProps {
 export default function Chatting({ roomId, user }: ChattingProps) {
     const [chats, setChats] = useState<Chat[]>([]);
     socket.on(`chat_${roomId}`, (content: string, name: string) => {
-        console.log("IUNN: ", content);
         const chatting: Chat = {
             author: name,
             content: content,

@@ -93,13 +93,13 @@ export async function updatePlayerAction(prevState: any, form: FormData) {
     if (!session) return "You don't have a session.";
     const game: Game = await fetchGame(session.user.roomId);
     if (session.user.name !== game.players[0]) return "Not your turn";
-    console.log("bet in action", game.currentBet);
     const playerMoney = session.user.money;
     const action: Action = {
         name: form.get("action") as any,
         size: Number(form.get("amount")),
         playerMoney: playerMoney,
     };
+    if (action.name === "CALL") action.size = game.currentBet;
     const validateFields = validateUserAction(Number(game.currentBet), action);
 
     if (validateFields.error) {
@@ -114,15 +114,6 @@ export async function updatePlayerAction(prevState: any, form: FormData) {
             roomId: session.user.roomId,
             action: action,
             name: session.user.name,
-        }),
-    });
-    await fetch("http://localhost:3000/api/socket", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            roomId: session.user.roomId,
         }),
     });
     revalidatePath("/board/room");
