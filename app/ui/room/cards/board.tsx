@@ -20,6 +20,11 @@ export default function Board({ roomId, name }: BoardProps) {
     const [communityCards, setCommunityCards] = useState<[] | Card[]>([]);
     const [change, setChange] = useState(false);
     socket.on(`room_${roomId}`, (data) => {
+        if (data === "clean") {
+            setHands([]);
+            setCommunityCards([]);
+            setChange(false);
+        }
         if (data === "card") setChange(!change);
     });
     useEffect(() => {

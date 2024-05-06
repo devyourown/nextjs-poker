@@ -1,16 +1,31 @@
-import { fetchRoom } from "@/app/lib/cache-data";
-import { auth } from "@/auth";
-import Replay from "./replay";
-import { PlayerResult, Room } from "@/app/lib/definitions";
-import { unstable_noStore } from "next/cache";
+"use client";
 
-export default async function GameResult() {
-    unstable_noStore();
-    const session = await auth();
-    if (!session) return;
-    const room: Room = await fetchRoom(session.user.roomId);
-    const playerResult: PlayerResult[] | null =
-        room.gameResult !== null ? room.gameResult : null;
+import Replay from "./replay";
+import { PlayerResult } from "@/app/lib/definitions";
+import { useEffect, useState } from "react";
+import { socket } from "@/app/lib/socket";
+
+export default function GameResult({ roomId }: { roomId: string }) {
+    const [change, setChange] = useState(false);
+    const [playerResult, setPlayerResult] = useState<null | PlayerResult[]>(
+        null
+    );
+    socket.on(`room_${roomId}`, () => {
+        setChange(!change);
+    });
+    useEffect(() => {
+        const fetchData = async (roomId: string) => {
+            const data = await fetch("/api/result", {
+                method: "POST",
+                body: JSON.stringify({ roomId: roomId }),
+            });
+            const { result } = await data.json();
+            if (result) {
+                setPlayerResult(result);
+            }
+        };
+        fetchData(roomId);
+    }, [change]);
     return (
         <>
             {playerResult && (
@@ -25,7 +40,7 @@ export default async function GameResult() {
                             );
                         })}
                     </div>
-                    <Replay roomId={session.user.roomId} />
+                    <Replay roomId={roomId} />
                 </>
             )}
         </>

@@ -47,6 +47,8 @@ export async function POST(req: Request) {
     if (replay) {
         makeGame(room, smallBlind, bigBlind);
         room.gameResult = null;
+        await setRoom(roomId, room);
+        socket.emit("room_change", roomId, "clean");
         return NextResponse.json("replay");
     }
     if (isEveryoneReady(room.users)) return NextResponse.json("wrong request.");

@@ -14,7 +14,7 @@ export default async function Page() {
         <div className="relative h-screen bg-green-500">
             <Exit />
             <Board name={name} roomId={roomId} />
-            <GameResult />
+            <GameResult roomId={roomId} />
             <Players roomId={roomId} name={name} />
             <Action />
             <Chatting roomId={roomId} user={name} />

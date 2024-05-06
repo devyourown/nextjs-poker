@@ -17,7 +17,13 @@ export default function Players({ name, roomId }: PlayersProps) {
     const [currentBet, SetCurrentBet] = useState<null | number>(null);
     const [potSize, setPotSize] = useState<null | number>(null);
     const [change, setChange] = useState(false);
-    socket.on(`room_${roomId}`, () => {
+    socket.on(`room_${roomId}`, (data) => {
+        if (data === "clean") {
+            setSortedUsers([]);
+            setFirstPlayer(null);
+            SetCurrentBet(null);
+            setPotSize(null);
+        }
         setChange(!change);
     });
     useEffect(() => {
@@ -34,7 +40,6 @@ export default function Players({ name, roomId }: PlayersProps) {
             if (game) {
                 setFirstPlayer(game.players[0]);
                 SetCurrentBet(game.currentBet);
-                console.log(game.potSize);
                 setPotSize(game.potSize);
             }
         };

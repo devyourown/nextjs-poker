@@ -18,14 +18,15 @@ import { socket } from "@/app/lib/socket";
 function handleMoneyWithAction(
     action: Action,
     user: User,
-    logs: MoneyLog[],
+    turnLogs: MoneyLog[],
     game: Game
 ) {
     if (action.name === "BET" || action.name === "CALL") {
-        const userLog = logs.find((log) => log.playerName === user.name)!;
+        const userLog = turnLogs.find((log) => log.playerName === user.name)!;
         user.money! -= action.size;
-        userLog.money += action.size;
-        game.potSize += action.size;
+        user.money! += userLog.money;
+        game.potSize += action.size - userLog.money;
+        userLog.money = action.size;
     }
 }
 
@@ -68,8 +69,6 @@ export async function POST(req: Request) {
     const beforeStatus = room.game?.gameStatus;
     const gameAfterAction = playWith(action, room.game!);
     room.game = gameAfterAction;
-    console.log(action.size);
-    console.log(room.game.potSize);
     const user = room.users.find((u) => u.name === name)!;
     handleMoneyWithAction(action, user, room.turnBetMoney, room.game);
     let emitMessage = "";
