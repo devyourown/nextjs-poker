@@ -1,5 +1,5 @@
 import { RandomDeck } from "@/core/deck/Deck";
-import { makeDeck } from "@/newcore/deck";
+import { makeDeck } from "@/core/deck";
 
 describe("poker deck test", () => {
     it("should be specific number of cards", () => {

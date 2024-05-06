@@ -3,7 +3,7 @@ import {
     RankingCalculator,
     RankingString,
     getRank,
-} from "@/core/rank/RankCalculator";
+} from "@/core/RankCalculator";
 
 describe("poker rank test", () => {
     let cards: Card[];

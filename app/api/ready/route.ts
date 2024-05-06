@@ -1,8 +1,8 @@
 import { fetchRoom, setRoom } from "../../lib/cache-data";
 import { NextResponse } from "next/server";
 import { Card, Game, GameStatus, MoneyLog, Room } from "@/app/lib/definitions";
-import { isEveryoneReady, makeUserReady } from "@/newcore/room";
-import { makeDeck } from "@/newcore/deck";
+import { isEveryoneReady, makeUserReady } from "@/core/room";
+import { makeDeck } from "@/core/deck";
 import { socket } from "@/app/lib/socket";
 
 //this function has side effect

@@ -1,5 +1,5 @@
 import { MoneyLog } from "@/app/lib/definitions";
-import { splitMoney } from "@/newcore/pot";
+import { splitMoney } from "@/core/pot";
 
 function mapToLog(maps: Map<string, number>) {
     const result: MoneyLog[] = [];

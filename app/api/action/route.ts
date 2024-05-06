@@ -1,6 +1,6 @@
 import { fetchRoom, setRoom } from "../../lib/cache-data";
 import { NextResponse } from "next/server";
-import { playWith } from "@/newcore/game";
+import { playWith } from "@/core/game";
 import {
     Action,
     GameStatus,
@@ -8,8 +8,8 @@ import {
     Room,
     User,
 } from "@/app/lib/definitions";
-import { giveMoneyTo, splitMoney } from "@/newcore/pot";
-import { makeResult } from "@/newcore/result";
+import { giveMoneyTo, splitMoney } from "@/core/pot";
+import { makeResult } from "@/core/result";
 import { updateMoney } from "@/app/lib/data";
 import { socket } from "@/app/lib/socket";
 

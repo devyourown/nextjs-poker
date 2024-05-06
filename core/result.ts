@@ -1,6 +1,6 @@
 import { Card, PlayerResult, User } from "@/app/lib/definitions";
 import { Card as PlayCard, Suit } from "@/core/deck/Card";
-import { RankingCalculator, getRank } from "@/core/rank/RankCalculator";
+import { RankingCalculator, getRank } from "@/core/RankCalculator";
 
 function convertSuit(suit: string) {
     if (suit === "hearts") {
