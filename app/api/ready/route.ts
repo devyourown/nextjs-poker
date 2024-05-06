@@ -9,6 +9,7 @@ import { NextResponse } from "next/server";
 import { Card, Game, GameStatus, MoneyLog, User } from "@/app/lib/definitions";
 import { isEveryoneReady, makeUserReady } from "@/newcore/room";
 import { makeDeck } from "@/newcore/deck";
+import { socket } from "@/app/lib/socket";
 
 async function makeGame(
     roomId: string,
@@ -60,6 +61,9 @@ export async function POST(req: Request) {
     if (isEveryoneReady(users)) {
         console.log("your game prepared.");
         await makeGame(roomId, users, smallBlind, bigBlind);
+        socket.emit("room_change", roomId, "card");
+    } else {
+        socket.emit("room_change", roomId);
     }
     return NextResponse.json("good job");
 }

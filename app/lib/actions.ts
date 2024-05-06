@@ -10,6 +10,7 @@ import { revalidatePath } from "next/cache";
 import { validateUserAction } from "@/error/Validator";
 import { fetchGame } from "./cache-data";
 import { Action, Game } from "./definitions";
+import { socket } from "./socket";
 
 export async function authenticate(
     prevState: string | undefined,

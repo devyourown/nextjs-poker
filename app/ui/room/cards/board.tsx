@@ -1,27 +1,49 @@
-import { fetchGame, fetchUser } from "@/app/lib/cache-data";
-import { auth } from "@/auth";
+"use client";
+
 import Cards from "./cards";
-import { Card, Game, GameStatus, User } from "@/app/lib/definitions";
-import { unstable_noStore } from "next/cache";
+import { Card, GameStatus, User } from "@/app/lib/definitions";
+import { socket } from "@/app/lib/socket";
+import { useEffect, useState } from "react";
+
+interface BoardProps {
+    roomId: string;
+    name: string;
+}
 
 function getPossibleCommunityCards(board: Card[], gameStatus: GameStatus) {
     if (gameStatus === GameStatus.PREFLOP) return [];
     return board.slice(0, 2 + gameStatus);
 }
 
-export default async function Board() {
-    unstable_noStore();
-    const session = await auth();
-    const game: Game = await fetchGame(session?.user.roomId!);
-    const user: User = (await fetchUser(
-        session?.user.roomId!,
-        session?.user.name!
-    ))!;
-    const status = game ? game.gameStatus : GameStatus.PREFLOP;
-    const communityCards = getPossibleCommunityCards(
-        game ? game.communityCards : [],
-        status
-    );
+export default function Board({ roomId, name }: BoardProps) {
+    const [hands, setHands] = useState<[] | Card[]>([]);
+    const [communityCards, setCommunityCards] = useState<[] | Card[]>([]);
+    const [currentBet, SetCurrentBet] = useState<null | number>(null);
+    const [change, setChange] = useState(false);
+    socket.on(`room_${roomId}`, (data) => {
+        if (data === "card") setChange(!change);
+    });
+    useEffect(() => {
+        const fetchData = async (roomId: string) => {
+            const data = await fetch("/api/game", {
+                method: "POST",
+                body: JSON.stringify({ roomId: roomId }),
+            });
+            const { game, users } = await data.json();
+            if (game) {
+                const user = users.find((u: User) => u.name === name);
+                if (user.hands) setHands(user.hands);
+                setCommunityCards(
+                    getPossibleCommunityCards(
+                        game.communityCards,
+                        game.gameStatus
+                    )
+                );
+                SetCurrentBet(game.currentBet);
+            }
+        };
+        fetchData(roomId);
+    }, [change]);
 
     return (
         <>
@@ -30,15 +52,15 @@ export default async function Board() {
                     <Cards cards={communityCards} />
                 </div>
             )}
-            {user?.hands && (
+            {hands && (
                 <div>
                     <span>Your Hands : </span>
-                    <Cards cards={user.hands} />
+                    <Cards cards={hands} />
                 </div>
             )}
-            {game && (
+            {currentBet && (
                 <div>
-                    <span>Bet Size: {game.currentBet}</span>
+                    <span>Bet Size: {currentBet}</span>
                 </div>
             )}
         </>

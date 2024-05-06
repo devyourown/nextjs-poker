@@ -23,6 +23,7 @@ import {
 import { giveMoneyTo, splitMoney } from "@/newcore/pot";
 import { makeResult } from "@/newcore/result";
 import { updateMoney } from "@/app/lib/data";
+import { socket } from "@/app/lib/socket";
 
 async function handlePlayersMoney(
     roomId: string,
@@ -84,10 +85,15 @@ export async function POST(req: Request) {
     const beforeStatus: Game = await fetchGame(roomId);
     const afterStatus = playWith(action, beforeStatus);
     await handlePlayersMoney(roomId, action, name);
-    if (beforeStatus.gameStatus !== afterStatus.gameStatus) updateBet(roomId);
+    let emitMessage = "";
+    if (beforeStatus.gameStatus !== afterStatus.gameStatus) {
+        updateBet(roomId);
+        emitMessage = "card";
+    }
     await setGame(roomId, afterStatus);
     if (afterStatus.gameStatus === GameStatus.END) {
         await handleGameEnd(roomId, afterStatus);
     }
+    socket.emit("room_change", roomId, emitMessage);
     return NextResponse.json("good job");
 }

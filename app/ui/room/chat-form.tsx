@@ -36,6 +36,7 @@ interface ChattingProps {
 
 export default function Chatting({ roomId, user }: ChattingProps) {
     const [chats, setChats] = useState<Chat[]>([]);
+    const [input, setInput] = useState("");
     socket.on(`chat_${roomId}`, (content: string, name: string) => {
         const chatting: Chat = {
             author: name,
@@ -46,8 +47,8 @@ export default function Chatting({ roomId, user }: ChattingProps) {
 
     async function sendChat(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        const content = (e.nativeEvent.target as any).chat.value;
-        socket.emit("chat", roomId, content, user);
+        socket.emit("chat", roomId, input, user);
+        setInput("");
     }
     return (
         <Draggable bounds="body" handle=".chattingbar">
@@ -62,7 +63,16 @@ export default function Chatting({ roomId, user }: ChattingProps) {
                         </div>
                     );
                 })}
-                <input className="w-full" type="text" id="chat" name="chat" />
+                <input
+                    className="w-full"
+                    type="text"
+                    id="chat"
+                    name="chat"
+                    onChange={(e) => {
+                        setInput(e.target.value);
+                    }}
+                    value={input}
+                />
             </form>
         </Draggable>
     );

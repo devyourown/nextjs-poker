@@ -1,4 +1,5 @@
-import { socket } from "@/app/lib/socket";
+import { fetchGame, fetchUsers } from "@/app/lib/cache-data";
+import { Game, User } from "@/app/lib/definitions";
 import Action from "@/app/ui/room/action-form";
 import Board from "@/app/ui/room/cards/board";
 import Chatting from "@/app/ui/room/chat-form";
@@ -6,25 +7,19 @@ import Exit from "@/app/ui/room/exit";
 import Players from "@/app/ui/room/player/players";
 import GameResult from "@/app/ui/room/result";
 import { auth } from "@/auth";
-import { unstable_noStore } from "next/cache";
 
 export default async function Page() {
-    unstable_noStore();
     const session = await auth();
-    socket.on(`room_${session?.user.roomId}`, (data) => {
-        //should re-render page
-    });
+    const roomId = session?.user.roomId!;
+    const name = session?.user.name!;
     return (
         <div className="relative h-screen bg-green-500">
             <Exit />
-            <Board />
+            <Board name={name} roomId={roomId} />
             <GameResult />
-            <Players />
+            <Players roomId={roomId} name={name} />
             <Action />
-            <Chatting
-                roomId={session?.user.roomId!}
-                user={session?.user.name!}
-            />
+            <Chatting roomId={roomId} user={name} />
         </div>
     );
 }

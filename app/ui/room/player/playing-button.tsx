@@ -24,7 +24,6 @@ export function PlayingButton({ name, roomId }: PlayingButtonProps) {
                 bigBlind: 2000,
             }),
         });
-        socket.emit("room_change", roomId);
     }
     return (
         <button
