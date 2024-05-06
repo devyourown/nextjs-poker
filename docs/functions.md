@@ -1,26 +1,26 @@
 # Poker Function
 
-- ~~Making UI~~
-- ~~room ui~~
-- ~~action ui~~
-- ~~login ui~~
-- ~~signup UI, function~~
-- ~~board ui~~
-- ~~entering room function~~
-- ~~login function~~
-- ~~make database~~
-- ~~core poker function~~
-- ~~core poker function tests~~
-- ~~rank function~~
-- ~~rank tests~~
-- ~~deck function~~
-- ~~deck tests~~
-- ~~game function~~
-- Making moves of Redis to User, User to Redis light.
-- trigger to re-render room
-- ~~playing in room function~~
-- show GameResult and restart Game.
-- Chatting in room function
-- UI Modification.
-- game tests
-- oauth2
+-   ~~Making UI~~
+-   ~~room ui~~
+-   ~~action ui~~
+-   ~~login ui~~
+-   ~~signup UI, function~~
+-   ~~board ui~~
+-   ~~entering room function~~
+-   ~~login function~~
+-   ~~make database~~
+-   ~~core poker function~~
+-   ~~core poker function tests~~
+-   ~~rank function~~
+-   ~~rank tests~~
+-   ~~deck function~~
+-   ~~deck tests~~
+-   ~~game function~~
+-   ~~Making moves of Redis to User, User to Redis light.~~
+-   ~~trigger to re-render room~~
+-   ~~playing in room function~~
+-   ~~show GameResult and restart Game.~~
+-   ~~Chatting in room function~~
+-   UI Modification.
+-   game tests
+-   oauth2
