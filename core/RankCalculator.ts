@@ -1,5 +1,3 @@
-import { Card, Suit } from "../core/deck/Card";
-
 export class RankingCalculator {
     static calculateCards(cards: Card[]): number {
         const numbersOfCards: number[] =
@@ -282,4 +280,33 @@ export function getRank(value: number): RankingString {
         }
     }
     return RankingString.STRAIGHT_FLUSH;
+}
+
+export class Card {
+    private suit: Suit;
+    private value: number;
+
+    private constructor(value: number, suit: Suit) {
+        this.suit = suit;
+        this.value = value;
+    }
+
+    static of(num: number, suit: Suit) {
+        return new Card(num, suit);
+    }
+
+    public getValue() {
+        return this.value;
+    }
+
+    public getSuit() {
+        return this.suit;
+    }
+}
+
+export enum Suit {
+    HEARTS = 0,
+    DIAMONDS,
+    CLUBS,
+    SPADES,
 }

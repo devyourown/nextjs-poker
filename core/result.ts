@@ -1,5 +1,5 @@
 import { Card, PlayerResult, User } from "@/app/lib/definitions";
-import { Card as PlayCard, Suit } from "@/core/deck/Card";
+import { Card as PlayCard, Suit } from "./RankCalculator";
 import { RankingCalculator, getRank } from "@/core/RankCalculator";
 
 function convertSuit(suit: string) {
