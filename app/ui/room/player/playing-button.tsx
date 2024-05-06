@@ -1,5 +1,6 @@
 "use client";
 
+import { socket } from "@/app/lib/socket";
 import { useState } from "react";
 
 interface PlayingButtonProps {
@@ -23,15 +24,7 @@ export function PlayingButton({ name, roomId }: PlayingButtonProps) {
                 bigBlind: 2000,
             }),
         });
-        await fetch("/api/socket", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                roomId: roomId,
-            }),
-        });
+        socket.emit("room_change", roomId);
     }
     return (
         <button

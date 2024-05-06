@@ -1,5 +1,4 @@
 import { NextAuthConfig } from "next-auth";
-import { unstable_update } from "./auth";
 
 export const authConfig = {
     pages: {
@@ -11,7 +10,7 @@ export const authConfig = {
             const isOnBoard = nextUrl.pathname.startsWith("/board");
             if (isOnBoard) {
                 if (isLoggedIn) return true;
-                return Response.redirect(new URL("/login", nextUrl));
+                return false;
             } else if (isLoggedIn) {
                 return Response.redirect(new URL("/board", nextUrl));
             }
