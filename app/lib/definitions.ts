@@ -29,11 +29,10 @@ export type Card = {
 export type Room = {
     roomId: string;
     users: User[];
-    isPlaying: boolean;
     turnBetMoney: MoneyLog[];
     totalBetMoney: MoneyLog[];
     gameResult: PlayerResult[] | null;
-    game: Game;
+    game: Game | null;
 };
 
 export type PlayerOrder = {

@@ -1,4 +1,4 @@
-import { fetchGame, fetchRoom, fetchUsers } from "@/app/lib/cache-data";
+import { fetchRoom } from "@/app/lib/cache-data";
 import { Game, User } from "@/app/lib/definitions";
 import { NextResponse } from "next/server";
 

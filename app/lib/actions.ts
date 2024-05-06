@@ -8,9 +8,8 @@ import { pool } from "./data";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { validateUserAction } from "@/error/Validator";
-import { fetchGame } from "./cache-data";
-import { Action, Game } from "./definitions";
-import { socket } from "./socket";
+import { fetchRoom } from "./cache-data";
+import { Action, Game, Room } from "./definitions";
 
 export async function authenticate(
     prevState: string | undefined,
@@ -92,7 +91,9 @@ export async function createAccount(prevState: State, form: FormData) {
 export async function updatePlayerAction(prevState: any, form: FormData) {
     const session = await auth();
     if (!session) return "You don't have a session.";
-    const game: Game = await fetchGame(session.user.roomId);
+    const room: Room = await fetchRoom(session.user.roomId);
+    const game: Game = room.game!;
+    if (game === null) return "Game is not playing.";
     if (session.user.name !== game.players[0]) return "Not your turn";
     const playerMoney = session.user.money;
     const action: Action = {
@@ -117,5 +118,4 @@ export async function updatePlayerAction(prevState: any, form: FormData) {
             name: session.user.name,
         }),
     });
-    revalidatePath("/board/room");
 }

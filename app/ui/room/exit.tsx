@@ -1,6 +1,6 @@
 import { auth, unstable_update } from "@/auth";
 import { Button } from "../button";
-import { deleteUser, fetchRoom, setRoom } from "@/app/lib/cache-data";
+import { fetchRoom, setRoom } from "@/app/lib/cache-data";
 import { redirect } from "next/navigation";
 import { Room } from "@/app/lib/definitions";
 

@@ -1,5 +1,3 @@
-import { fetchGame, fetchUsers } from "@/app/lib/cache-data";
-import { Game, User } from "@/app/lib/definitions";
 import Action from "@/app/ui/room/action-form";
 import Board from "@/app/ui/room/cards/board";
 import Chatting from "@/app/ui/room/chat-form";

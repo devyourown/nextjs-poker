@@ -27,7 +27,6 @@ export default function Players({ name, roomId }: PlayersProps) {
             const { game, users } = await data.json();
             users.sort((a: User, b: User) => a.name.length - b.name.length);
             setSortedUsers(users);
-            console.log(game.players);
             if (game) setFirstPlayer(game.players[0]);
         };
         fetchData(roomId);

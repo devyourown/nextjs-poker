@@ -4,6 +4,7 @@ import { PowerIcon } from "@heroicons/react/24/outline";
 import { redirect } from "next/navigation";
 import { Room, User } from "../lib/definitions";
 import { fetchRoom, findEmptyRoom, setRoom } from "../lib/cache-data";
+import { socket } from "../lib/socket";
 
 export default async function Page() {
     const session = await auth();
@@ -32,6 +33,7 @@ export default async function Page() {
                                 await unstable_update({
                                     user: { roomId: id, ...user },
                                 });
+                                socket.emit("room_change", user.roomId);
                                 redirect("/board/room");
                             }}
                         >
