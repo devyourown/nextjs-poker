@@ -10,15 +10,18 @@ function makeGame(room: Room, smallBlind: number, bigBlind: number) {
     const users = room.users;
     const deck: Card[] = makeDeck(users.length);
     const firstBet: MoneyLog[] = [];
+    const totalBet: MoneyLog[] = [];
     users.forEach((user, index) => {
         if (index === users.length - 2) {
             user.money! -= smallBlind;
             firstBet.push({ playerName: user.name, money: smallBlind });
-        }
-        if (index === users.length - 1) {
+        } else if (index === users.length - 1) {
             user.money! -= bigBlind;
             firstBet.push({ playerName: user.name, money: bigBlind });
+        } else {
+            firstBet.push({ playerName: user.name, money: 0 });
         }
+        totalBet.push({ playerName: user.name, money: 0 });
         user.hands = [deck.pop()!, deck.pop()!];
     });
     const playersName: string[] = users.map((user) => {
@@ -34,7 +37,7 @@ function makeGame(room: Room, smallBlind: number, bigBlind: number) {
     };
     room.game = game;
     room.turnBetMoney = firstBet;
-    room.users = users;
+    room.totalBetMoney = totalBet;
 }
 
 export async function POST(req: Request) {

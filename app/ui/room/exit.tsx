@@ -3,6 +3,7 @@ import { Button } from "../button";
 import { fetchRoom, setRoom } from "@/app/lib/cache-data";
 import { redirect } from "next/navigation";
 import { Room } from "@/app/lib/definitions";
+import { socket } from "@/app/lib/socket";
 
 export default function Exit() {
     return (
@@ -21,6 +22,7 @@ export default function Exit() {
                     );
                     room.users = filtered;
                     await setRoom(user.roomId, room);
+                    socket.emit("room_change", user.roomId);
                     redirect("/board");
                 }}
             >

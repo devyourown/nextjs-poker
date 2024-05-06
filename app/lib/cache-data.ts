@@ -57,6 +57,10 @@ export async function fetchRoom(roomId: string) {
 
 export async function setRoom(roomId: string, room: Room) {
     try {
+        if (room.users.length === 0) {
+            await redisClient.hDel("room", roomId);
+            return;
+        }
         await redisClient.hSet("room", roomId, JSON.stringify(room));
     } catch (error) {
         console.error("Database Set Room Error.", error);

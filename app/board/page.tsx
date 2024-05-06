@@ -27,6 +27,7 @@ export default async function Page() {
                                 user.ready = false;
                                 const id = await findEmptyRoom();
                                 user.roomId = id;
+                                user.ready = false;
                                 const room: Room = await fetchRoom(user.roomId);
                                 room.users.push(user);
                                 await setRoom(user.roomId, room);

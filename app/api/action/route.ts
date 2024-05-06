@@ -58,15 +58,22 @@ async function setGameEnd(room: Room) {
 export async function POST(req: Request) {
     const { roomId, action, name } = await req.json();
     const room: Room = await fetchRoom(roomId);
+    const beforeStatus = room.game?.gameStatus;
     const gameAfterAction = playWith(action, room.game!);
+    room.game = gameAfterAction;
     const user = room.users.find((u) => u.name === name)!;
     handleMoneyWithAction(action, user, room.turnBetMoney);
     let emitMessage = "";
-    if (gameAfterAction.gameStatus !== room.game!.gameStatus) {
+    if (gameAfterAction.gameStatus !== beforeStatus) {
         updateBetLogs(room.turnBetMoney, room.totalBetMoney);
         emitMessage = "card";
+        const names: string[] = [];
+        room.users.forEach((u) => {
+            if (gameAfterAction.players.includes(u.name))
+                return names.push(u.name);
+        });
+        room.game.players = names;
     }
-    room.game = gameAfterAction;
     if (room.game.gameStatus === GameStatus.END) {
         setGameEnd(room);
     }

@@ -24,6 +24,7 @@ export default function Players({ name, roomId }: PlayersProps) {
                 method: "POST",
                 body: JSON.stringify({ roomId: roomId }),
             });
+            if (data === null) return;
             const { game, users } = await data.json();
             users.sort((a: User, b: User) => a.name.length - b.name.length);
             setSortedUsers(users);
