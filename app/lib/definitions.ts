@@ -1,74 +1,70 @@
 export type User = {
-    id: string;
-    roomId?: string;
-    name: string;
-    email: string;
-    img_src?: string;
-    money?: number;
-    password?: string;
-    hands?: Card[];
-    ready: boolean;
+  id: string;
+  roomId?: string;
+  name: string;
+  email: string;
+  img_src?: string;
+  money?: number;
+  password?: string;
+  hands?: Card[];
+  ready: boolean;
 };
 
 export type Money = {
-    id: string;
-    user_id: string;
-    amount: number;
+  id: string;
+  user_id: string;
+  amount: number;
 };
 
 export type Chat = {
-    author: string;
-    content: string;
+  author: string;
+  content: string;
 };
 
 export type Card = {
-    suit: "hearts" | "diamonds" | "clubs" | "spades";
-    number: number;
+  suit: "hearts" | "diamonds" | "clubs" | "spades";
+  number: number;
 };
 
 export type Room = {
-    roomId: string;
-    users: User[];
-    turnBetMoney: MoneyLog[];
-    totalBetMoney: MoneyLog[];
-    gameResult: PlayerResult[] | null;
-    game: Game | null;
-};
-
-export type PlayerOrder = {
-    users: User[];
+  roomId: string;
+  users: User[];
+  turnBetMoney: MoneyLog[];
+  totalBetMoney: MoneyLog[];
+  gameResult: PlayerResult[] | null;
+  game: Game | null;
 };
 
 export type Action = {
-    name: "CALL" | "BET" | "CHECK" | "FOLD";
-    size: number;
-    playerMoney: number;
+  name: "CALL" | "BET" | "CHECK" | "FOLD";
+  size: number;
+  playerMoney: number;
 };
 
 export enum GameStatus {
-    PREFLOP = 0,
-    FLOP,
-    TURN,
-    LIVER,
-    END,
+  PREFLOP = 0,
+  FLOP,
+  TURN,
+  LIVER,
+  END,
 }
 
 export type Game = {
-    numOfAllinPlayers: number;
-    gameStatus: GameStatus;
-    numOfLeftTurn: number;
-    currentBet: number;
-    players: string[];
-    communityCards: Card[];
-    potSize: number;
+  numOfAllinPlayers: number;
+  gameStatus: GameStatus;
+  numOfLeftTurn: number;
+  currentBet: number;
+  players: string[];
+  communityCards: Card[];
+  potSize: number;
 };
 
 export type PlayerResult = {
-    name: string;
-    rank: string;
+  name: string;
+  rank: string;
 };
 
 export type MoneyLog = {
-    money: number;
-    playerName: string;
+  money: number;
+  playerName: string;
 };

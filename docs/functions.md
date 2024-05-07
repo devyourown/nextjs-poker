@@ -22,6 +22,7 @@
 - ~~show GameResult and restart Game.~~
 - ~~Chatting in room function~~
 - bug: after login, url should be /board, not /login
+- bug: same id login error
 - unique player name check when sign up
 - UI Modification.
 - game tests
