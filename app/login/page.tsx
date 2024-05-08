@@ -1,5 +1,11 @@
 import { GiPokerHand } from "react-icons/gi";
 import LoginForm from "../ui/login-form";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Login Page",
+  description: "NextPoker Login Page",
+};
 
 export default function LoginPage() {
   return (
