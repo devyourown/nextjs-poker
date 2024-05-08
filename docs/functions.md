@@ -21,7 +21,8 @@
 - ~~playing in room function~~
 - ~~show GameResult and restart Game.~~
 - ~~Chatting in room function~~
-- bug: after login, url should be /board, not /login
+- ~~bug: after login, url should be /board, not /login~~
+- make Welcome Page
 - bug: same id login error
 - unique player name check when sign up
 - UI Modification.
