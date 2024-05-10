@@ -24,7 +24,7 @@
 - ~~bug: after login, url should be /board, not /login~~
 - make Welcome Page
 - bug: same id login error
-- unique player name check when sign up
+- ~~unique player name check when sign up~~
 - UI Modification.
 - game tests
 - oauth2

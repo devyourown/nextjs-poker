@@ -8,6 +8,55 @@ export const pool = new Pool({
   port: Number(process.env.POSTGRES_PORT),
 });
 
+export async function isExistNickname(nickname: string) {
+  try {
+    const data = await pool.query(
+      "SELECT COUNT(*) FROM users WHERE name = $1",
+      [nickname]
+    );
+    return data.rowCount === 1;
+  } catch (error) {
+    console.log("Database Error: ", error);
+  }
+}
+
+export async function isExistEmail(email: string) {
+  try {
+    const data = await pool.query(
+      "SELECT COUNT(*) FROM users WHERE email = $1",
+      [email]
+    );
+    return data.rowCount === 1;
+  } catch (error) {
+    console.log("Database Error: ", error);
+  }
+}
+
+export async function makeNewAccount(
+  email: string,
+  name: string,
+  hashedPassword: string
+) {
+  try {
+    await pool.query(
+      `INSERT INTO users (name, email, password)
+      VALUES ($1, $2, $3)`,
+      [name, email, hashedPassword]
+    );
+    const res = await pool.query("SELECT id FROM users WHERE name = $1", [
+      name,
+    ]);
+    const { id } = res.rows[0];
+    await pool.query(
+      `INSERT INTO money (user_id, amount)
+      VALUES ($1, $2)`,
+      [id, 100000]
+    );
+  } catch (e) {
+    console.log("Database Error: ", e);
+  }
+}
+
 export async function updateMoney(user_id: string, money: number) {
   try {
     console.log("Updateing money data");
