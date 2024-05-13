@@ -15,6 +15,25 @@ redisClient.on("error", (err: any) => console.error(err));
 
 if (!redisClient.isOpen) redisClient.connect();
 
+export async function saveSecretKey(email: string, key: string) {
+    try {
+        await redisClient.hSet("email", email, key);
+    } catch (error) {
+        console.error("Saving Key Error : ", error);
+    }
+}
+
+export async function getSecretKey(email: string) {
+    try {
+        const data = await redisClient.hGet("email", email);
+        if (data) return data;
+        return null;
+    } catch (error) {
+        console.error("Getting Key Error : ", error);
+        return null;
+    }
+}
+
 function makeEmptyRoom(roomId: string): Room {
     return {
         users: [],

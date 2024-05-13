@@ -11,7 +11,6 @@ export default function ImageUpload({ imageSrc }: ImageUploadProps) {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const sendImage = useCallback(
         async (e: React.ChangeEvent<HTMLInputElement>) => {
-            console.log("hey");
             if (!e.target.files) {
                 return;
             }
